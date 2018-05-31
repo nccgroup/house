@@ -18,7 +18,7 @@ intended to make Frida script writing as simple as possible.*
 
 ## TL;DR
 ~~~
-git clone ...
+git clone https://github.com/nccgroup/house
 pip install pipenv
 pipenv install
 pipenv shell

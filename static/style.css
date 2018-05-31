@@ -1,0 +1,237 @@
+/*!
+ * Start Bootstrap - Simple Sidebar (https://startbootstrap.com/template-overviews/simple-sidebar)
+ * Copyright 2013-2017 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
+ */
+
+body {
+    overflow-x: hidden;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 150%;
+    padding-left: 2px
+}
+
+ul {
+    margin-left: 10px;
+}
+
+/* Second Level */
+
+ul ul {
+    margin-left: 15px;
+}
+
+/* Third Level */
+
+ul ul ul {
+    margin-left: 20px;
+}
+
+p {
+    margin-bottom: 2px;
+}
+
+modal-body{
+    padding: 0;
+    margin: 0;
+}
+
+#outputTbl {
+    font-size: 75%;
+}
+
+#err_msg{
+    padding: 0;
+    margin: 0;
+}
+
+#editor {
+    height: 200px;
+}
+
+#editor2 {
+    height: 200px;
+}
+
+#editor3 {
+    width: 700;
+    height: 300px;
+}
+
+#editor4 {
+    height: 300px;
+}
+
+#editor5 {
+    height: 200px;
+}
+
+#intercepts_script_editor{
+    height: 200px; 
+}
+
+#editor6 {
+    height: 300px;
+}
+
+#editor7 {
+    height: 300px;
+}
+
+#editor_hook_history{
+    height: 340px; 
+}
+
+
+#editor_enum_history{
+    height: 340px; 
+}
+
+#editor_intercept_history{
+    height: 340px; 
+}
+
+
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    padding-left: 250px;
+}
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    background: #000;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 250px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 200px;
+    margin: 0;
+    padding: 0; list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: inside;
+    /*color: #999999;*/
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+
+/* some hidden and toggle stuff*/
+
+.hidden {
+    display: none;
+}
+
+.clickable
+{
+    cursor: pointer;
+}
+
+.well{
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 0px;
+    padding-right: 5px;
+
+    margin-bottom: 5px
+}
+
+a:hover {
+ cursor:pointer;
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 0;
+    }
+    #wrapper.toggled {
+        padding-left: 205px;
+    }
+    #sidebar-wrapper {
+        width: 0;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        width: 205px;
+    }
+    #page-content-wrapper {
+        padding: 20px;
+        position: relative;
+    }
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}
+
+#hooks-div{
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 100%;
+}
+

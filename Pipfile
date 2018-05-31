@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+flask = "*"
+colored = "*"
+frida = "<11.0.0"
+"jinja2" = "*"
+requests = "*"
+flask-socketio = "*"
+ipython = "*"
+flask-login = "*"
+
+[requires]
+python_version = "2.7"

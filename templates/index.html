@@ -1,0 +1,447 @@
+<!-- # MIT License
+
+# Copyright (c) 2018 NCC Group
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE. -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>House</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type=text/javascript src="{{
+      url_for('static', filename='js/app.js') }}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='src-min/ace.js') }}"></script>
+    <style>
+    .row.content {
+        height: 550px
+    }
+    /* Set gray background color and 100% height */
+
+    .sidenav {
+        background-color: #f1f1f1;
+        height: 100%;
+    }
+    /* On small screens, set height to 'auto' for the grid */
+
+    @media screen and (max-width: 767px) {
+        .row.content {
+            height: auto;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="container-fluid">
+            <a href="#" class="btn btn-secondary text-mute" id="menu-toggle" style="font-size: 250%;font-family: Apple Chancery, cursive">House</a>
+            <div id="err_msg">
+            </div>
+            <div class="container-fluid">
+                <ul class="nav nav-tabs">
+                    <li class="nav active"><a data-toggle="tab" href="#env"><i class="glyphicon glyphicon-off"></i> Start</a></li>
+                    <li class="nav"><a data-toggle="tab" href="#enum"><i class="glyphicon glyphicon-eye-open"></i> Enumeration</a></li>
+                    <li class="nav"><a data-toggle="tab" href="#hooks"><i class="glyphicon glyphicon-magnet"></i> Hooks</a></li>
+                    <li class="nav"><a data-toggle="tab" href="#intercepts" onclick="socket.emit('fetchInspect');"><i class="glyphicon glyphicon-screenshot"></i> Intercept</a></li>
+                    <li><span id="uuid" style="display: None;">{{ uuid }}</span>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="env">
+                        <div class="container-fluid">
+                            <br />
+                            <div id="DevicePackage1" class="well">
+                                <div id="device_info_tab">
+                                    <div class="bg-danger">
+                                        <p class="text-warning">Can I have ur phone please?</p>
+                                        <button class="btn btn-success" type="button" onclick='refresh_device()'>Refresh</button>
+                                    </div>
+                                </div>
+                                <br />
+                                <div id="pkg_info">
+                                    <div class="bg-danger">
+                                        <p class="text-warning"><i class="glyphicon glyphicon-book"></i> Can I have ur package please?</p>
+                                        <div class="input-group col-sm-3">
+                                            <input id="packagename1" class="form-control" placeholder="packagename">
+                                            <span class="input-group-btn">
+                        <button class="btn btn-success" type="button" onclick='changePackage($("#packagename1").val())'>Confirm</button>
+
+                      </span>
+                                        </div>
+                                        <br>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <p class="text-primary"><i class="glyphicon glyphicon-info-sign"></i> Env:</p>
+                            <div id="env_result">
+                                <br />Waiting for device & package...</div>
+                            <script>
+                            doEnv();
+                            </script>
+                            <br />
+                            <button class="btn btn-info" onclick="doEnv();">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="enum">
+                        <div class="container-fluid">
+                            <br />
+                            <ul class="nav nav-pills nav-fill" id="nav_enum">
+                                <li class="nav active"><a data-toggle="tab" href="#loadedClasses" onclick="enumAllClasses();">Loaded Classes <i class="glyphicon glyphicon-refresh"></i></a></li>
+                                <li class="nav"><a data-toggle="tab" href="#AllClasses" onclick="enumDexClasses();">Dex Classes <i class="glyphicon glyphicon-refresh"></i></a></li>
+                                <li class="nav"><a data-toggle="tab" href="#classMethods">Class Methods</a></li>
+                                <li class="nav"><a data-toggle="modal" href="#history" data-target="#enum_history" id="get_enum_history">History Scripts</a></li>
+                                <div class="modal fade" id="enum_history" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle"><code>./cache/enum</code></h5>
+                                            </div>
+                                            <div class="modal-body " id="enum_history_output">
+                                                <div class="row">
+                                                    <div class="col-md-4 pre-scrollable" id="dir_enum_lst">
+                                                    </div>
+                                                    <div id="editor_enum_history" class="col-md-8 ml-auto"></div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="load_enum_history_script();">Load this</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade in active" id="loadedClasses"></div>
+                                <div class="tab-pane" id="AllClasses"></div>
+                                <div class="tab-pane" id="history">asdf</div>
+                                <div class="tab-pane" id="classMethods">
+                                    <div class="well">
+                                        <p class="text-primary">Enum under this class: </p>
+                                        <input id="class_to_find" class="col-sm-2" placeholder="Class Name">
+                                        <span class="input-group-btn">
+                      <button class="btn btn-success" type="button" id="find_class">Generate Script</button>
+                      <button id="editor3_clear" class="btn">Clear</button>
+                      </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div id="enum_info">
+                                <div>
+                                    <h4 class="text-info"> Current Script </h4>
+                                    <div id="editor3"></div>
+                                    <button id="load_script_enum" class="btn btn-success">Load Script</button>
+                                    <button class="btn btn-warning" onclick="unload_script(); clear_EnumMessage()">Detach</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#save_enum_script">
+                                        Save Script
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="save_enum_script" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-body ">
+                                                    <div class="container-fluid">
+                                                        <p class="text-primary">Save As: </p>
+                                                        <br />
+                                                        <input id="save_enumscript_name" class="form-control" placeholder="classname" value="enum_tmp">
+                                                        <br />
+                                                        <button class="btn btn-success" type="button" id="save_enum_script_button">Save</button>
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_save_enum_script">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-info"> Enum OutPuts </h4>
+                                <div id="editor4">Enum OutPuts</div>
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="hooks">
+                        <div class="container-fluid">
+                            <div id="hooks-div">
+                                <p id="toggle_hook_info" class="text-primary" style="cursor: pointer;">Hooks <i class="glyphicon glyphicon-resize-small"></i></p>
+                                <div class="well" id="hook-info-div">
+                                    <div id="hook_info">
+                                        <div class="row">
+                                            <div id="inputhook" class="col-sm-4">
+                                                <input id="classname" class="form-control" placeholder="classname">
+                                                <input id="method" class="form-control" placeholder="method">
+                                                <button id="add_hook" class="btn btn-info">Add</button>
+                                                <button id="hook_clear" class="btn">Clear</button>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <p class="text-primary"> Current Hooks </p>
+                                                <div id="editor">{"classname":"","method":""}
+                                                </div>
+                                                <!-- <button id="save_hook" class="btn btn-info ">Save</button> -->
+                                                <button id="gen_script" class="btn btn-success ">Generate Script</button>
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#hooks_history" onclick="get_hooks_history();">
+                                                    History Scripts
+                                                </button>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="hooks_history" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLongTitle"><code>./cache/hook</code></h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body " id="hooks_history_output">
+                                                                <div class="row">
+                                                                    <div class="col-md-4 pre-scrollable" id="dir_hooks_lst">
+                                                                    </div>
+                                                                    <div id="editor_hook_history" class="col-md-8 ml-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="load_hook_history_script();">Load this</button>
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <p class="text-primary">Current Script </p>
+                                                <div id="editor2"></div>
+                                                <button id="load_script" class="btn btn-success">Load Script</button>
+                                                <button id="hooks_detach" class="btn btn-warning" onclick="unload_script(); clear_hookMessage()">Detach</button>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#save_hook_script">
+                                                    Save Script
+                                                </button>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="save_hook_script" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-body ">
+                                                                <div class="container-fluid">
+                                                                    <p class="text-primary">Save As: </p>
+                                                                    <br />
+                                                                    <input id="save_hookscript_name" class="form-control" placeholder="classname" value="hook_tmp">
+                                                                    <br />
+                                                                    <button class="btn btn-success" type="button" id="save_hook_script_button">Save</button>
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_save_hook_script">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pre-scrollable" style="min-height: 790px;">
+                                    <p class="text-primary"> Output Console <i class="glyphicon glyphicon-remove clickable" onclick="clear_hookMessage()"></i></p>
+                                    <table class="table table-striped table-bordered" id="outputTbl">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 20%">MethodName</th>
+                                                <th style="width: 60%">Args Dump</th>
+                                                <th style="width: 20%">Return Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="outputBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="intercepts">
+                        <div class="container-fluid">
+                            <p id="toggle_inspect_info" class="text-primary" style="cursor: pointer;">Inspect <i class="glyphicon glyphicon-resize-small"></i></p>
+                            <div class="well" id="inspect-div">
+                                <div id="inspect_info">
+                                    <div class="row">
+                                        <div id="inputhook" class="col-sm-6">
+                                            <p class="text-primary"> Inspect Inputs </p>
+                                            <input id="inspect_classname" class="form-control" placeholder="classname">
+                                            <input id="inspect_method" class="form-control" placeholder="method">
+                                            <button id="Inspect" class="btn btn-info">Inspect</button>
+                                        </div>
+                                        <div class="pre-scrollable col-sm-6">
+                                            <p class="text-primary"> Inspect OutPuts </p>
+                                            <div id="inspect_result">Please Wait
+                                            </div>
+                                            <div class="modal fade" id="intercept_history" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLongTitle"><code>./cache/intercept</code></h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-4 pre-scrollable" id="dir_int_lst">
+                                                                    </div>
+                                                                    <div id="editor_intercept_history" class="col-md-8 ml-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="load_intercept_history_script();">Load this</button>
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row" id="intercept-info-div">
+                                <div class="col-sm-8">
+                                    <p class="text-primary"> Intercept Scripts </p>
+                                    <div id="intercepts_script_editor">Please Wait
+                                    </div>
+                                    <button id="load_intercept_script" class="btn btn-success">Load Script</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#save_intercept_script">Save Script</button>
+                                    <div class="modal fade" id="save_intercept_script" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-body ">
+                                                                <div class="container-fluid">
+                                                                    <p class="text-primary">Save As: </p>
+                                                                    <br />
+                                                                    <input id="save_interceptscript_name" class="form-control" placeholder="classname" value="intercept_tmp">
+                                                                    <br />
+                                                                    <button class="btn btn-success" type="button" id="save_intercept_script_button">Save</button>
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_save_intercept_script">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <p class="text-primary"> Intercept Outputs </p>
+                                    <div id="editor5">Intercept OutPuts</div>
+                                    <button id="intercept_send" class="btn btn-info">Forward</button>
+                                    <button id="intercept_detach" class="btn btn-warning" onclick="unload_script(); clear_inspect()">Detach</button>
+                                </div>
+                            </div>
+                            <br />
+                            <p class="clickable text-primary" class="text-primary" id="toggle_repl"> REPL <i class="glyphicon glyphicon-menu-right"></i></p>
+                            <div class="well" id="intercept-repl-div" style="display: none;">
+                                <div class="row container-fluid">
+                                    <div id="editor6" class="col-sm-5"></div>
+                                    <div class="col-sm-1">
+                                        <button id="repl_send" class="btn btn-primary"> Run </button>
+                                        <button id="repl_clear" class="btn btn-info">Clear</button>
+                                        <button id="repl_clear" class="btn btn-warning" onclick="quitRepl()">Done</button>
+                                    </div>
+                                    <div id="editor7" class="col-sm-6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/javascript");
+    editor.session.setUseWrapMode(true);
+
+    var editor2 = ace.edit("editor2");
+    editor2.setTheme("ace/theme/dracula");
+    editor2.session.setMode("ace/mode/javascript");
+    editor2.session.setUseWrapMode(true);
+
+    var editor3 = ace.edit("editor3");
+    editor3.setTheme("ace/theme/dracula");
+    editor3.session.setMode("ace/mode/javascript");
+    editor3.session.setUseWrapMode(true);
+
+    var editor4 = ace.edit("editor4");
+    editor4.setTheme("ace/theme/twilight");
+    editor4.session.setMode("ace/mode/javascript");
+    editor4.session.setUseWrapMode(true);
+    editor4.session.setUseWorker(false)
+    editor4.setReadOnly(true);
+
+
+    var editor5 = ace.edit("editor5");
+    editor5.setTheme("ace/theme/dracula");
+    editor5.session.setMode("ace/mode/javascript");
+    editor5.session.setUseWrapMode(true);
+    editor5.session.setUseWorker(false)
+
+    var editor6 = ace.edit("editor6");
+    editor6.setTheme("ace/theme/terminal");
+    editor6.session.setMode("ace/mode/javascript");
+    editor6.session.setUseWrapMode(true);
+
+    var editor7 = ace.edit("editor7");
+    editor7.setTheme("ace/theme/monokai");
+    editor7.session.setMode("ace/mode/javascript");
+    editor7.session.setUseWrapMode(true);
+    editor7.setReadOnly(true);
+
+    var intercepts_script_editor = ace.edit("intercepts_script_editor");
+    intercepts_script_editor.setTheme("ace/theme/dracula");
+    intercepts_script_editor.session.setMode("ace/mode/javascript");
+    intercepts_script_editor.session.setUseWrapMode(true);
+
+    var editor_hook_history = ace.edit("editor_hook_history");
+    editor_hook_history.setTheme("ace/theme/dracula");
+    editor_hook_history.session.setMode("ace/mode/javascript");
+    editor_hook_history.session.setUseWrapMode(true);
+
+    var editor_enum_history = ace.edit("editor_enum_history");
+    editor_enum_history.setTheme("ace/theme/dracula");
+    editor_enum_history.session.setMode("ace/mode/javascript");
+    editor_enum_history.session.setUseWrapMode(true);
+
+    var editor_intercept_history = ace.edit("editor_intercept_history");
+    editor_intercept_history.setTheme("ace/theme/dracula");
+    editor_intercept_history.session.setMode("ace/mode/javascript");
+    editor_intercept_history.session.setUseWrapMode(true);
+
+    
+    </script>
+</body>
+
+</html>

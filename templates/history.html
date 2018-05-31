@@ -1,0 +1,14 @@
+{%- for item in tree.children recursive %}
+<ul class="nav nav-pills nav-stacked" id="nav_archive">
+    <li class="nav row"><a class="col-sm-6" onclick="showHistoryScript('{{item.path}}','{{item.op}}');" style='padding: 0;margin:0;'> <i class="glyphicon glyphicon-file"> {{ item.name }} </i></a><a class="col-sm-2 text-error" style='padding: 0;margin:0;' onclick="deleteScript('{{item.path}}')">x</a>
+    </li>
+</ul>
+{%- endfor %}
+
+<script>
+$("#nav_archive li").click(function() {
+    $("#nav_archive li").removeClass("active");
+    $(this).addClass("active");
+});
+
+</script>

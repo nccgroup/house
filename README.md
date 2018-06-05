@@ -149,6 +149,6 @@ To make House work; you would need:
 Try to restart **both** the frida server and House, if still not working, please file an issue.
 
 #### Frida error?
-House has been tested using Frida version < 11.0.0; there might be some issues with the newest version, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
+House has been tested using Frida version 11.0.9; there might be some issues with some other versions, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
 
 

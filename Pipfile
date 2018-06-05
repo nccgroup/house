@@ -8,7 +8,7 @@ name = "pypi"
 [packages]
 flask = "*"
 colored = "*"
-frida = "<11.0.0"
+frida = "*"
 "jinja2" = "*"
 requests = "*"
 flask-socketio = "*"

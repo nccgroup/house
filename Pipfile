@@ -12,7 +12,6 @@ frida = "*"
 "jinja2" = "*"
 requests = "*"
 flask-socketio = "*"
-ipython = "*"
 flask-login = "*"
 
 [requires]

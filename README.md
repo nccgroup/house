@@ -152,3 +152,12 @@ Try to restart **both** the frida server and House, if still not working, please
 House has been tested using Frida version 11.0.9; there might be some issues with some other versions, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
 
 
+## Contact
+If you have more questions about House, or want to help extending it, feel free to contact:
+
+[@Hao_on_b3at](https://twitter.com/Hao_on_b3at)
+
+Or send an email to: [Hao Ke](mailto:hao.ke@nccgroup.trust?Subject=House)
+
+
+

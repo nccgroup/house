@@ -145,15 +145,56 @@ def setPackage(pkgname):
         f.write("")
     update_conf()
     
+def setDevice(id):
+    house_global.device = house_global.device_manager.get_device(id)
+    print stylize("[+]Changing Device with id {}".format(id), MightBeImportant)
+    try:
+        socketio.emit('show_selected_device',
+                  {'device_list': json.dumps(house_global.device_dict), 'selection': str(house_global.device.id)},
+                  namespace='/eventBus')
+    except Exception as e:
+        raise e
+    
 
 def getDevice():
     try:
-        house_global.device = frida.get_usb_device()
-        return str(house_global.device)
+        print stylize("[+] Trying to get device..", Info)
+        house_global.device_dict = {}
+        house_global.device_manager = frida.get_device_manager()
+        device_list = house_global.device_manager.enumerate_devices()
+        if len(device_list) != 0:
+            remote_device_list = []
+            for dv in device_list:
+                if (str(dv.id) != 'local') & (str(dv.id) != 'tcp'):
+                    remote_device_list.append(dv)
+        if len(remote_device_list) == 1:
+            house_global.device = remote_device_list[0]
+            socketio.emit('update_device', 
+                {'data': cgi.escape(str(house_global.device))},          
+                namespace='/eventBus')
+        elif len(remote_device_list) > 1:
+            for dv in remote_device_list:
+                house_global.device_dict[str(dv.id)] = str(dv)
+            # Interact with user to select device
+            # IPython.embed()
+            if house_global.device == None:
+                socketio.emit('select_device',
+                                  {'device_list': json.dumps(house_global.device_dict)},
+                                  namespace='/eventBus')
+            else:
+                socketio.emit('show_selected_device',
+                                  {'device_list': json.dumps(house_global.device_dict), 'selection': str(house_global.device.id)},
+                                  namespace='/eventBus')
+        else:
+            raise Exception("No device Found!")
+        # return str(house_global.device)
     except Exception as e:
         house_global.device = None
+        socketio.emit('update_device', 
+                {'data': cgi.escape(str(house_global.device))},          
+                namespace='/eventBus')
         print stylize(str(e), Error)
-    
+        # raise e
 
 def onMessage(message,data):
     house_global.onMessageException = ''
@@ -352,7 +393,7 @@ def load_script():
     getDevice()
     if ((house_global.script_to_load != '') & (house_global.packagename != '') & (house_global.device != None)):
     
-        unload_script()
+        # unload_script()
         print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
 
         try:

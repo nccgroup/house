@@ -9,11 +9,19 @@ function refresh_device() {
     socket.emit("refresh_device")
 }
 
+function select_device() {
+    device_id = $("input[name='device_id']:checked").val();
+    console.log("select_device_button clicked..")
+    if (device_id != null) {
+        socket.emit("set_device_id", { id: device_id })
+    }
+}
+
 function doEnv() {
     socket.emit("doEnv")
 }
 
-function get_uuid(){
+function get_uuid() {
     return $("#uuid").text()
 }
 
@@ -35,7 +43,7 @@ function get_hooks_history() {
     socket.emit("get_hooks_history")
 }
 
-function get_intercept_history(){
+function get_intercept_history() {
     socket.emit("get_intercept_history")
 }
 
@@ -78,7 +86,7 @@ function deleteScript(path) {
     socket.emit("deleteScript", { path: path })
 }
 
-function genIntercept(){
+function genIntercept() {
     var index = $("#indexSelect").val() ? $("#indexSelect").val() : 0
     var intercept_index = { intercept_index: Number(index) }
     socket.emit("genIntercept", intercept_index)
@@ -293,8 +301,9 @@ window.onload = function() {
         $("#" + divId).toggle();
     }
 
+
     $(() => {
-        socket.emit('authentication', {uuid: get_uuid()});
+        socket.emit('authentication', { uuid: get_uuid() });
         var current_intercept_time = null
         refresh_device()
         getPackages()
@@ -304,6 +313,43 @@ window.onload = function() {
 
         socket.on('log', function(msg) {
             console.log(("[+]Log: " + msg.data))
+        });
+
+        socket.on('select_device', function(msg) {
+            dl = msg.device_list;
+            select_device_html = '<div class="bg-warning"><form>'
+            if (dl != null && dl != "None") {
+                json_dl = JSON.parse(dl)
+                jQuery.each(json_dl, function(id, val) {
+                    select_device_html += `<div class="radio">
+      <label><input type="radio" name="device_id" value="` + id + `">` + `<p class="text-info"><i class="glyphicon glyphicon-phone"></i>` + val + " </p></label></div>"
+                });
+                select_device_html += `<button class="btn btn-success" type="button" id="select_device_button" onclick="select_device()"'>Select</button>
+                    </div>`
+                $("#device_info_tab").html(select_device_html)
+                console.log(select_device_html)
+            }
+
+        });
+
+        socket.on('show_selected_device', function(msg) {
+            dl = msg.device_list;
+            id = msg.selection
+            select_device_html = '<div class="bg-success"><form>'
+            if (dl != null && dl != "None") {
+                json_dl = JSON.parse(dl)
+                jQuery.each(json_dl, function(id, val) {
+                    select_device_html += `<div class="radio">
+      <label><input type="radio" name="device_id" value="` + id + `">` + `<p class="text-info"><i class="glyphicon glyphicon-phone"></i>` + val + " </p></label></div>"
+                });
+                select_device_html += `<button class="btn btn-success" type="button" id="select_device_button" onclick="select_device()"'>Select</button>
+                    </div>`
+                $("#device_info_tab").html(select_device_html)
+                // $("input[name='device_id']:checked").val();
+                $("input[name='device_id'][value=" + id + "]").attr('checked', 'checked');
+                // console.log(select_device_html)
+            }
+
         });
 
         socket.on('update_device', function(msg) {
@@ -431,7 +477,7 @@ window.onload = function() {
             }
         });
 
-        socket.on('update_intercept_script', function(msg){
+        socket.on('update_intercept_script', function(msg) {
             intercepts_script_editor.setValue(msg.script)
         });
 
@@ -475,7 +521,7 @@ window.onload = function() {
             $("#close_save_intercept_script").click()
         })
 
-        save_intercept_script_button
+
 
         $("#postPackage").click(() => {
             var pkg = { packagename: $("#packagename").val() }
@@ -553,7 +599,7 @@ window.onload = function() {
         })
 
         $("#load_intercept_script").click(() => {
-            data = {script: intercepts_script_editor.getValue()};
+            data = { script: intercepts_script_editor.getValue() };
             socket.emit("load_intercept_script", data)
         });
 

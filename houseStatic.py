@@ -27,7 +27,7 @@ import frida
 import sys
 import requests
 import json
-# import IPython
+import IPython
 import jinja2
 import os
 import cgi

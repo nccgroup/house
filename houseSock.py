@@ -76,7 +76,16 @@ def sock_auth(msg):
 @authenticated_only
 def refresh_device():
     getDevice()
-    emit('update_device', {'data': cgi.escape(str(house_global.device))})
+    # emit('update_device', {'data': cgi.escape(str(house_global.device))})
+
+@socketio.on('set_device_id', namespace='/eventBus')
+@authenticated_only
+def set_device(msg):
+    # clean up script for previous devices
+    unload_script()
+    device_id = msg.get('id')
+    setDevice(device_id)
+    # emit('update_device', {'data': cgi.escape(str(house_global.device))})
 
 @socketio.on('setPackage', namespace='/eventBus')
 @authenticated_only
@@ -267,6 +276,7 @@ def doEnv():
     try:
         load_script()
     except Exception as e:
+        # IPython.embed()
         emit('update_env_info',{'error': cgi.escape("[!]load_script Exception: {}".format(str(e)))})
 
 @socketio.on('doInspect', namespace='/eventBus')

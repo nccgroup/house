@@ -28,6 +28,8 @@ import uuid
 
 class houseGlobal:
 	def __init__(self):
+		self.device_manager = None
+		self.device_dict = {}
  		self.device = None
 		self.packagename = ""        # can have up to 1 package for each session
 		self.script_to_load = ''

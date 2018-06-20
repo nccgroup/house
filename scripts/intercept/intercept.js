@@ -2,6 +2,7 @@ var retval = null
 var ret_constructor = null
 var tmp_obj = null
 var fields = null
+var clazz_Thread = null
 
 function setRetval(ret){
     retval = ret_constructor(ret)
@@ -15,11 +16,17 @@ function inspectObject(obj){
     return fields
 }
 
+function getStackTrace(){
+    return clazz_Thread.currentThread().getStackTrace().toString().replace(/,/g, '\n')
+}
+
 setTimeout(function() {
     Java.perform(function() {
         // Get Java class wrappers
 
         {{clazz_hook}} = Java.use("{{clazz_name}}");
+        clazz_Thread = Java.use("java.lang.Thread");
+        clazz_Exception = Java.use("java.lang.Exception");
         clazz = Java.use("java.lang.Class");
         field = Java.use("java.lang.reflect.Field");
         BaseDexClassLoader = Java.use("dalvik.system.BaseDexClassLoader");

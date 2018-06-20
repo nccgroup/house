@@ -132,6 +132,7 @@ following command: `frida-ps -U`.
 - Several REPL functions were provided by House to make the testing easier:
 	- `inspectObject(obj)` uses `java.lang.reflect` to inspect fields information within an object.
 	- `setRetval(ret)` takes a parameter and will try to cast it to the correct return type using the original return value's constructor.
+    - `getStackTrace()` will print the stack trace.
 	- More REPL functions will be added in the future.
 
 	![int3.gif](./gifs/int3.gif)

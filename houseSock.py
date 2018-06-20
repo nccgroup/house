@@ -221,6 +221,7 @@ def doUnload():
 @socketio.on('clear_hookMessage', namespace='/eventBus')
 @authenticated_only
 def clear_hookMessage():
+    print stylize("[+] Hook Message Cleard", Info)
     house_global.messages = []
 
 @socketio.on('clear_EnumMessage', namespace='/eventBus')

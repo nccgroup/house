@@ -136,6 +136,7 @@ following command: `frida-ps -U`.
 
 	![int3.gif](./gifs/int3.gif)
 
+**Note:** For constructor method hooking/intercept, input `$init` as method name.
 
 ## FAQ 
 #### Prerequisite:

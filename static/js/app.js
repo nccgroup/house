@@ -549,6 +549,7 @@ window.onload = function() {
             $("#classname").val('')
             $("#method").val('')
             editor.setValue('');
+            editor2.setValue('');
         })
 
         $("#editor3_clear").click(() => {

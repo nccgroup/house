@@ -5,8 +5,11 @@ var fields = null
 var clazz_Thread = null
 
 function setRetval(ret){
-    retval = ret_constructor(ret)
-    console.log("retval overriden..")
+    if (retval != null){
+        retval = ret_constructor(ret);
+        console.log("retval overriden..");
+    }
+    
 }
 
 function inspectObject(obj){
@@ -45,8 +48,16 @@ setTimeout(function() {
         {{ method_hook }}.implementation = function() {
             var sendback = ''
             args = arguments
-            retval = eval('this.{{ method_name }}.apply(this, arguments)')
-            ret_constructor = retval.constructor
+            // retval = eval('this.{{ method_name }}.apply(this, arguments)')
+            try {
+                retval = eval('this.$init.apply(this, arguments)')
+            } catch (err) {
+                retval = null
+                console.log("Exception - cannot compute retval.." + JSON.stringify(err))
+            }
+            if (retval != null){
+                ret_constructor = retval.constructor;
+            }
             sendback = intercept_signature + JSON.stringify(args) + timestamp_signature + timestamp
             send(sendback)
 
@@ -55,7 +66,7 @@ setTimeout(function() {
                 recv_time = value.time
                 recv_data = value.payload
                 recv_option = value.option
-                console.log("[App Recv]  " + recv_option + ": "+ recv_data + "at time: " + JSON.stringify(recv_time))
+                // console.log("[App Recv]  " + recv_option + ": "+ recv_data + "at time: " + JSON.stringify(recv_time))
                 });
                 op.wait();
 
@@ -70,6 +81,7 @@ setTimeout(function() {
                             args[i] = args[i].constructor(recv_arg[i])
                         }
                         retval = eval('this.{{ method_name }}.apply(this, args)')
+                        
                         console.log("[+ Frida ] Debug  retval being overwritten!" + JSON.stringify(typeof(retval)) + " : " + JSON.stringify(retval))
                         }else{
                             console.log("[Frida]Timestamp mismatch.." + JSON.stringify(timestamp) + ' vs ' + recv_time)
@@ -80,7 +92,7 @@ setTimeout(function() {
                 else{
                     try {
                         eval_result = String(eval(recv_data))
-                        console.log(eval_result)
+                        // console.log(eval_result)
                     } catch (err) {
                         eval_result = ''
                         console.log("Exception caught in frida.." + JSON.stringify(err))

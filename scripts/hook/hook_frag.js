@@ -20,7 +20,13 @@
 		        	arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)
 		        }
 		        method_info += {{ method_hook }}.methodName + '( ' + arg_type+ ') '
-		        var retval = eval('this.{{ method_name }}.apply(this, arguments)')
+		        // var retval = eval('this.{{ method_name }}.apply(this, arguments)')
+		        try {
+	                retval = eval('this.{{ method_name }}.apply(this, arguments)')
+	            } catch (err) {
+	                retval = null
+	                console.log("Exception - cannot compute retval.." + JSON.stringify(err))
+	            }
 		        var retval_dump = "(" + ret_type + ') : ' + JSON.stringify(retval)
 		        cell = {"method_info" : method_info, "arg_dump" : arg_dump, "retval_dump" : retval_dump}
 

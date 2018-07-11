@@ -23,7 +23,7 @@
 from houseStatic import *
 from houseGlobal import house_global,socketio, random_token
 from _frida import ProcessNotFoundError
-import traceback, IPython
+import traceback
 
 def init_conf():
     if not (os.path.exists('config')):
@@ -178,7 +178,6 @@ def getDevice():
             for dv in remote_device_list:
                 house_global.device_dict[str(dv.id)] = str(dv)
             # Interact with user to select device
-            # IPython.embed()
             if house_global.device == None:
                 socketio.emit('select_device',
                                   {'device_list': json.dumps(house_global.device_dict)},

@@ -22,6 +22,8 @@
 
 from houseStatic import *
 from houseGlobal import house_global,socketio, random_token
+from _frida import ProcessNotFoundError
+import traceback, IPython
 
 def init_conf():
     if not (os.path.exists('config')):
@@ -394,16 +396,37 @@ def load_script():
     if ((house_global.script_to_load != '') & (house_global.packagename != '') & (house_global.device != None)):
     
         # unload_script()
-        print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
-
         try:
-            process = house_global.device.attach(house_global.packagename)
+            pending = False
+            print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
+            try:
+                
+                pid = house_global.device.get_process(house_global.packagename).pid
+                process = house_global.device.attach(house_global.packagename)
+            except ProcessNotFoundError as e:
+                print stylize("[!] Process not found, trying to spawn it..", MightBeImportant)
+                pid = house_global.device.spawn([house_global.packagename])
+                process = house_global.device.attach(pid)
+                pending = True
+
             house_global.script = process.create_script(house_global.script_to_load)
             house_global.script.on('message',onMessage)
             house_global.script.load()
+
+            if pending: house_global.device.resume(pid)
         except Exception as e:
             print stylize("[!]load_script Exception: {}".format(str(e)), Error)
+            traceback.print_exc(file=sys.stdout)
             raise e
+
+        # try:
+        #     process = house_global.device.attach(house_global.packagename)
+        #     house_global.script = process.create_script(house_global.script_to_load)
+        #     house_global.script.on('message',onMessage)
+        #     house_global.script.load()
+        # except Exception as e:
+        #     print stylize("[!]load_script Exception: {}".format(str(e)), Error)
+        #     raise e
         
     else:
         print stylize('[!]Please tell me what you want!', Error)

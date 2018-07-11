@@ -25,9 +25,9 @@
 	                retval = eval('this.{{ method_name }}.apply(this, arguments)')
 	            } catch (err) {
 	                retval = null
-	                console.log("Exception - cannot compute retval.." + JSON.stringify(err))
+	                console.log("Exception - cannot compute retval.." + String(err))
 	            }
-		        var retval_dump = "(" + ret_type + ') : ' + JSON.stringify(retval)
+		        var retval_dump = "(" + ret_type + ') : ' + String(retval) + " \n@ " + getTime()
 		        cell = {"method_info" : method_info, "arg_dump" : arg_dump, "retval_dump" : retval_dump}
 
 		        sendback = hook_signature + JSON.stringify(cell)

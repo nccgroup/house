@@ -1,7 +1,9 @@
 		{{clazz_hook}} = Java.use("{{clazz_name}}");
 		var overloadz_{{clazz_hook}} = eval("{{clazz_hook}}.{{method_name}}.overloads");
 		var ovl_count_{{clazz_hook}} = overloadz_{{clazz_hook}}.length;
-		var linebreak = "h0us3l1nebr3ak"
+		
+
+		clazz_Thread = Java.use("java.lang.Thread");
 		var cell = {}
 
 		send("There are " + ovl_count_{{clazz_hook}}.toString() + " methods to hook");
@@ -19,7 +21,7 @@
 		        	arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
 		        	arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)
 		        }
-		        method_info += {{ method_hook }}.methodName + '( ' + arg_type+ ') '
+		        method_info += "Reverse Call Stack: " + linebreak + getCaller() + linebreak + linebreak + {{ method_hook }}.methodName + '( ' + arg_type+ ') '
 		        // var retval = eval('this.{{ method_name }}.apply(this, arguments)')
 		        try {
 	                retval = eval('this.{{ method_name }}.apply(this, arguments)')
@@ -27,11 +29,11 @@
 	                retval = null
 	                console.log("Exception - cannot compute retval.." + String(err))
 	            }
-		        var retval_dump = "(" + ret_type + ') : ' + String(retval) + " \n@ " + getTime()
+		        var retval_dump = "(" + ret_type + ') : ' + String(retval) + linebreak + "@ " + getTime()
 		        cell = {"method_info" : method_info, "arg_dump" : arg_dump, "retval_dump" : retval_dump}
 
 		        sendback = hook_signature + JSON.stringify(cell)
-		        console.log(retval_dump);
+		        // console.log(arg_dump + retval_dump);
 		        send(sendback)
 		        return retval;
 		    }

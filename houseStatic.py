@@ -39,4 +39,5 @@ Info = colored.fg("green") + colored.attr("bold")
 MightBeImportant = colored.fg("blue") + colored.attr("bold")
 
 linebreak = "h0us3l1nebr3ak"
+codeblock = "h0us3bl0ck"
 delimiter = "h4oar3ud0ing"

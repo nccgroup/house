@@ -238,7 +238,11 @@ def onMessage(message,data):
         retval = j_info.get("retval_dump")
 
         if args != None:
-            args = args.replace(linebreak,'<br>')
+            args = cgi.escape(args).replace(linebreak,'<br>')
+        if method != None:
+            method = cgi.escape(method).replace(linebreak,'<br>')
+        if retval != None:
+            retval = cgi.escape(retval).replace(linebreak,'<br>')
 
         info_dict = {"methodname":method,"args":args,"retval":retval}
         house_global.messages.insert(0,info_dict)

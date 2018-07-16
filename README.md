@@ -147,8 +147,10 @@ To make House work; you would need:
 1. A rooted android device with frida-server running plugged in your computer, use only one USB device is recommended.
 2. Local frida-python version matches frida-server's.
 
+
 #### Cannot get device? Does not work?
-Try to restart **both** the frida server and House, if still not working, please file an issue.
+Make sure you are using **http://127.0.0.1:<PORT>** as the host.
+Also please try to restart **both** the frida server and House, if still not working, please file an issue.
 
 #### Time out error?
 Often occues when there are multiple USB devices connected, try to restart the target application.

@@ -6,7 +6,7 @@ try{
 	Interceptor.attach (Module.findExportByName ( "{{so_name}}", "{{method_name}}"), {
         onEnter: function (args) {
         	// Native hooking is weird; mannual tweaking ur script here please!
-        	console.log("onEnter")
+        	console.log("{{so_name}} - {{method_name}} - onEnter")
 	        // arg_dump += ("arg" + index.toString() + ": " + String((Memory.readCString(args[index]))) + linebreak)
 	        method_info += "{{so_name}} . {{method_name}}"  
     	},

@@ -407,7 +407,11 @@ def build_hook_script():
 
 
 def build_enum_script(option, class_to_find, class_pattern):
+    if (class_to_find != None) & (".so" in class_to_find):
+        option = "enumLibSo"
+
     context = {'option': option, 'class_to_find': class_to_find, 'class_pattern': class_pattern, 'apk_path': get_apk_path()}
+    print context
 
     result = render('./scripts/enum/enum_skl.js',context)
     house_global.enum_script_to_load = result

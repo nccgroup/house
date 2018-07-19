@@ -51,6 +51,24 @@ function enumMethods(targetClass) {
     return ownMethods;
 }
 
+function enumLibSo(lib_name){
+    exports = Module.enumerateExportsSync(lib_name);
+    var foundObj = []
+    for(i=0; i<exports.length; i++){
+        foundObj.push(String(exports[i].name) + " : " + String(exports[i].address))
+    }
+
+    return foundObj
+    // for(i=0; i<exports.length; i++){
+
+    //     if(exports[i].name == "Java_com_yaotong_crackme_MainActivity_securityCheck"){
+    //         securityCheck = exports[i].address;
+    //         send("securityCheck is at " + securityCheck);
+    //         break;
+    //     }
+    // }
+}
+
 setTimeout(function() {
     Java.perform(function() {
         var sendback = ''
@@ -85,6 +103,14 @@ setTimeout(function() {
 	    a.forEach(function(s) { 
             methods_return += String(s) + '\n'
 	    });
+        sendback = enum_signature + methods_return
+
+        {% elif option == "enumLibSo" and class_to_find%}
+        // enumerate all methods in a class   
+        var a = enumLibSo("{{ class_to_find }}")
+        a.forEach(function(s) { 
+            methods_return += String(s) + '\n'
+        });
         sendback = enum_signature + methods_return
 
         {% else %}

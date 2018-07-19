@@ -3,7 +3,6 @@
 		var ovl_count_{{clazz_hook}} = overloadz_{{clazz_hook}}.length;
 		
 
-		clazz_Thread = Java.use("java.lang.Thread");
 		var cell = {}
 
 		send("There are " + ovl_count_{{clazz_hook}}.toString() + " methods to hook");

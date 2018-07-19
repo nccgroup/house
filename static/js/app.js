@@ -576,7 +576,7 @@ window.onload = function() {
         $("#load_script").click(() => {
             var script_to_load = { script: editor2.getValue() }
             socket.emit("loadHookScript", script_to_load)
-            overwrite()
+            // overwrite()
         })
 
         $("#load_script_enum").click(() => {

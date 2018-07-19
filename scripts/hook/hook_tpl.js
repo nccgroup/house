@@ -15,6 +15,10 @@ function getCaller(){
 
 setTimeout(function() {
     Java.perform(function() {
+    	console.log("In da house..")
+    	clazz_Thread = Java.use("java.lang.Thread");
 {{scripts}}
     });
 }, 0);
+
+{{native_scripts}}

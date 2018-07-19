@@ -362,6 +362,20 @@ def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0)
         print stylize("[!]prepare_script_fragment Error with {} - {} - {} ".format(clazz_name, method_name,script_type),Error)
         return ''
 
+def prepare_native_script_fragment(so_name, method_name):
+    context = {
+    'so_name' : '',
+    'method_name' : '',
+    }
+    if(so_name != None) & (so_name != '') & (method_name != None) & (method_name != ''):
+        context['so_name'] = so_name
+        context['method_name'] = method_name
+        result = render('./scripts/hook/native_hook_frag.js',context)
+        return result
+    else:
+        print stylize("[!]prepare_native_script_fragment Error with {} - {} ".format(so_name, method_name),Error)
+        return ''
+
 
 def refresh():
     return render_template('index.html', uuid=str(random_token))
@@ -372,14 +386,19 @@ def build_hook_script():
     hooks_number = len(hooks_list)
 
     realscript = ""
+    nativescript = ""
 
     for i in xrange(hooks_number):
         entry = hooks_list[i]
         clazz_name = entry['classname']
         method_name = entry['methodname']
-        realscript += prepare_script_fragment(clazz_name, method_name, "hook")
-        realscript += "\n// Added Hook \n"
-    context = {'scripts': realscript}
+        if ".so" not in clazz_name:
+            realscript += prepare_script_fragment(clazz_name, method_name, "hook")
+            realscript += "\n// Added Hook \n"
+        else:
+            nativescript += prepare_native_script_fragment(clazz_name, method_name)
+            nativescript += "\n// Added Hook \n"
+    context = {'scripts': realscript, 'native_scripts': nativescript}
 
     result = render('./scripts/hook/hook_tpl.js',context)
     house_global.hook_script = result

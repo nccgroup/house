@@ -148,7 +148,7 @@ Communications will happen over USB, make sure have your android device plugged 
     else:
         port  = 8000
     print stylize("[+] House running at http://127.0.0.1:{}".format(port), Info)
-    socketio.run(app, host = host, port = port, debug=False)
+    socketio.run(app, host = host, port = port, debug=True)
     
 
 if __name__ == '__main__':

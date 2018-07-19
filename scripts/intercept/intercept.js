@@ -50,7 +50,8 @@ setTimeout(function() {
             args = arguments
             // retval = eval('this.{{ method_name }}.apply(this, arguments)')
             try {
-                retval = eval('this.$init.apply(this, arguments)')
+                retval = eval('this.{{ method_name }}.apply(this, arguments)')
+                // retval = eval('this.$init.apply(this, arguments)')
             } catch (err) {
                 retval = null
                 console.log("Exception - cannot compute retval.." + JSON.stringify(err))

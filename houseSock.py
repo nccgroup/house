@@ -216,13 +216,14 @@ def gen_script(message):
 @socketio.on('unload_script', namespace='/eventBus')
 @authenticated_only
 def doUnload():
+    print stylize("[+]Unloading script..", Info)
     unload_script()
 
 @socketio.on('clear_hookMessage', namespace='/eventBus')
 @authenticated_only
 def clear_hookMessage():
-    print stylize("[+] Hook Message Cleard", Info)
     house_global.messages = []
+    print stylize("[+] Hook Message Cleard", Info)
 
 @socketio.on('clear_EnumMessage', namespace='/eventBus')
 @authenticated_only

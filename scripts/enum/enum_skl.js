@@ -1,5 +1,4 @@
 // Script Inspired by https://github.com/0xdea/frida-scripts/tree/master/android-snippets
-
 function enumAllClasses() {
     var allClasses = [];
     var classes = Java.enumerateLoadedClassesSync();

@@ -3,6 +3,7 @@ var env_signature = "t3llm3mor3ab0ut1t"
 
 setTimeout(function() {
     Java.perform(function() {
+        console.log("In da house..getting env..")
         var ActivityThread = Java.use('android.app.ActivityThread');
 
         var app = ActivityThread.currentApplication();

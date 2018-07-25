@@ -424,7 +424,6 @@ def load_script():
         unload_script()
         try:
             pending = False
-            print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
             try:
                 
                 pid = house_global.device.get_process(house_global.packagename).pid
@@ -436,11 +435,15 @@ def load_script():
                 pending = True
 
             house_global.script = house_global.session.create_script(house_global.script_to_load)
-            # IPython.embed()
+            
             house_global.script.on('message',onMessage)
             house_global.script.load()
 
-            if pending: house_global.device.resume(pid)
+            print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
+
+            if pending: 
+                # IPython.embed()
+                house_global.device.resume(pid)
         except Exception as e:
             print stylize("[!]load_script Exception: {}".format(str(e)), Error)
             traceback.print_exc(file=sys.stdout)

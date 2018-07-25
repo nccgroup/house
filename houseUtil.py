@@ -421,21 +421,22 @@ def load_script():
     getDevice()
     if ((house_global.script_to_load != '') & (house_global.packagename != '') & (house_global.device != None)):
     
-        # unload_script()
+        unload_script()
         try:
             pending = False
             print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
             try:
                 
                 pid = house_global.device.get_process(house_global.packagename).pid
-                process = house_global.device.attach(house_global.packagename)
+                house_global.session = house_global.device.attach(house_global.packagename)
             except ProcessNotFoundError as e:
                 print stylize("[!] Process not found, trying to spawn it..", MightBeImportant)
                 pid = house_global.device.spawn([house_global.packagename])
-                process = house_global.device.attach(pid)
+                house_global.session = house_global.device.attach(pid)
                 pending = True
 
-            house_global.script = process.create_script(house_global.script_to_load)
+            house_global.script = house_global.session.create_script(house_global.script_to_load)
+            # IPython.embed()
             house_global.script.on('message',onMessage)
             house_global.script.load()
 
@@ -444,15 +445,6 @@ def load_script():
             print stylize("[!]load_script Exception: {}".format(str(e)), Error)
             traceback.print_exc(file=sys.stdout)
             raise e
-
-        # try:
-        #     process = house_global.device.attach(house_global.packagename)
-        #     house_global.script = process.create_script(house_global.script_to_load)
-        #     house_global.script.on('message',onMessage)
-        #     house_global.script.load()
-        # except Exception as e:
-        #     print stylize("[!]load_script Exception: {}".format(str(e)), Error)
-        #     raise e
         
     else:
         print stylize('[!]Please tell me what you want!', Error)
@@ -465,12 +457,23 @@ def quitRepl():
         print stylize("No repl to terminate", MightBeImportant)
 
 def unload_script():
-    if(house_global.script):
+    if(house_global.session):
         print stylize('[-] Unload the script..', Info)
         try:
             quitRepl()
-            house_global.script.unload()
+            house_global.session.detach()
         except Exception as e:
             print stylize('[!] looks like {}'.format(str(e)), MightBeImportant)
     else:
         print stylize("[-] No script exists", MightBeImportant)
+
+# def unload_script():
+#     if(house_global.script):
+#         print stylize('[-] Unload the script..', Info)
+#         try:
+#             quitRepl()
+#             house_global.script.unload()
+#         except Exception as e:
+#             print stylize('[!] looks like {}'.format(str(e)), MightBeImportant)
+#     else:
+#         print stylize("[-] No script exists", MightBeImportant)

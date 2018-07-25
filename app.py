@@ -54,6 +54,11 @@ def enum_message():
 def hook_config():
     return json.dumps(house_global.hook_conf)
 
+# For debugging purpose
+@app.route('/script', methods=['GET'])
+def getDaScript():
+    return house_global.script_to_load
+
 @app.route('/hook_script', methods=['GET'])
 def getHookScript():
     try:

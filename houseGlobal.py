@@ -28,6 +28,7 @@ import uuid
 
 class houseGlobal:
 	def __init__(self):
+		self.session = None
 		self.device_manager = None
 		self.device_dict = {}
  		self.device = None

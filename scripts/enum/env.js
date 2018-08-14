@@ -1,15 +1,14 @@
 var context = null
 var env_signature = "t3llm3mor3ab0ut1t"
 
-setTimeout(function() {
-    Java.perform(function() {
-        console.log("In da house..getting env..")
-        var ActivityThread = Java.use('android.app.ActivityThread');
+Java.perform(function() {
+    console.log("In da house..getting env..")
+    var ActivityThread = Java.use('android.app.ActivityThread');
 
-        var app = ActivityThread.currentApplication();
+    var app = ActivityThread.currentApplication();
+    // Inspired by https://github.com/sensepost/objection
+    if (app != null){
         context = app.getApplicationContext();
-
-        // Inspired by https://github.com/sensepost/objection
         var data = {
             filesDirectory: context.getFilesDir().getAbsolutePath().toString(),
             cacheDirectory: context.getCacheDir().getAbsolutePath().toString(),
@@ -20,5 +19,9 @@ setTimeout(function() {
         };
 
         send(env_signature + JSON.stringify(data))
-    });
-}, 0);
+    }else{
+        console.log("Hooked too early, no context yet!")
+    }
+    
+});
+

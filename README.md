@@ -73,7 +73,7 @@ through the UI.
 **Customize Generated Scripts:** House provides a user interface to tweak
 its generated scripts.
 
-**Function Interception:** House provices users with the ability to inspect
+**Function Interception:** House provides users with the ability to inspect
 and interdict live function calls through the use of hook snippets, an
 interception UI, and a live REPL.
 
@@ -162,7 +162,7 @@ House has been tested using Frida version 11.0.9; there might be some issues wit
 ## Contact
 If you have more questions about House, or want to help extending it, feel free to contact:
 
-[@Hao_on_b3at](https://twitter.com/Hao_on_b3at)
+[@haoOnBeat](https://twitter.com/haoOnBeat)
 
 Or send an email to: [Hao Ke](mailto:hao.ke@nccgroup.trust?Subject=House)
 

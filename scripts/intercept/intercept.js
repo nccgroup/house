@@ -26,7 +26,7 @@ function getStackTrace(){
 setTimeout(function() {
     Java.perform(function() {
         // Get Java class wrappers
-
+        console.log("In da house..")
         {{clazz_hook}} = Java.use("{{clazz_name}}");
         clazz_Thread = Java.use("java.lang.Thread");
         clazz_Exception = Java.use("java.lang.Exception");

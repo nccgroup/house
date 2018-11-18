@@ -27,12 +27,15 @@
     <title>House</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/default.min.css') }}">
+    <script type=text/javascript src="{{
+      url_for('static', filename='src-min/jquery.min.js') }}"></script>
+    <script type=text/javascript src="{{
+      url_for('static', filename='src-min/socket.io.js') }}"></script>
+    <script type=text/javascript src="{{
+      url_for('static', filename='src-min/bootstrap.min.js') }}"></script>
     <script type=text/javascript src="{{
       url_for('static', filename='js/app.js') }}"></script>
     <script type=text/javascript src="{{ url_for('static', filename='src-min/ace.js') }}"></script>

@@ -1,0 +1,79 @@
+<div class="container-fluid">
+    <br />
+    <ul class="nav nav-pills nav-fill" id="nav_enum">
+        <li class="nav active"><a data-toggle="tab" href="#loadedClasses" onclick="enumAllClasses();">Loaded Classes <i class="glyphicon glyphicon-refresh"></i></a></li>
+        <li class="nav"><a data-toggle="tab" href="#AllClasses" onclick="enumDexClasses();">Dex Classes <i class="glyphicon glyphicon-refresh"></i></a></li>
+        <li class="nav"><a data-toggle="tab" href="#classMethods">Class Methods</a></li>
+        <li class="nav"><a data-toggle="modal" href="#history" data-target="#enum_history" id="get_enum_history">History Scripts</a></li>
+        <div class="modal fade" id="enum_history" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle"><code>./cache/enum</code></h5>
+                    </div>
+                    <div class="modal-body " id="enum_history_output">
+                        <div class="row">
+                            <div class="col-md-4 pre-scrollable" id="dir_enum_lst">
+                            </div>
+                            <div id="editor_enum_history" class="col-md-8 ml-auto"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="load_enum_history_script();">Load this</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="loadedClasses"></div>
+        <div class="tab-pane" id="AllClasses"></div>
+        <div class="tab-pane" id="history">asdf</div>
+        <div class="tab-pane" id="classMethods">
+            <div class="well">
+                <p class="text-primary">Enum under this class: </p>
+                <input id="class_to_find" class="col-sm-6" placeholder="Class Name">
+                <span class="input-group-btn">
+                      <button class="btn btn-success" type="button" id="find_class">Generate Script</button>
+                      <button id="editor3_clear" class="btn">Clear</button>
+                      </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div id="enum_info">
+        <div>
+            <h4 class="text-info"> Current Script </h4>
+            <div id="editor3"></div>
+            <button id="load_script_enum" class="btn btn-success">Load Script</button>
+            <button class="btn btn-warning" onclick="unload_script(); clear_EnumMessage()">Detach</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#save_enum_script">
+                Save Script
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="save_enum_script" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body ">
+                            <div class="container-fluid">
+                                <p class="text-primary">Save As: </p>
+                                <br />
+                                <input id="save_enumscript_name" class="form-control" placeholder="classname" value="enum_tmp">
+                                <br />
+                                <button class="btn btn-success" type="button" id="save_enum_script_button">Save</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_save_enum_script">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h4 class="text-info"> Enum OutPuts </h4>
+        <div id="editor4">Enum OutPuts</div>
+    </div>
+    <br />
+</div>

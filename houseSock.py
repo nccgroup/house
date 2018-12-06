@@ -281,6 +281,14 @@ def doEnv():
         # IPython.embed()
         emit('update_env_info',{'error': cgi.escape("[!]load_script Exception: {}".format(str(e)))})
 
+@socketio.on('loadStetho', namespace='/eventBus')
+def doLoadStetho():
+    try:
+        preload_script()
+    except Exception as e:
+        # IPython.embed()
+        emit('sideload_stetho_error',{'error': cgi.escape("[!]preload_script Exception: {}".format(str(e)))})
+
 @socketio.on('doInspect', namespace='/eventBus')
 @authenticated_only
 def doInspect(message):

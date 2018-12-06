@@ -7,7 +7,7 @@
                        \/      House        \/     \/
                 
                     Dynamic Mobile Analysis Tool
-                    Contact: hao.ke@nccgroup.trust
+                    Contact: hao.ke@nccgroup.com
 ~~~
 
 ## 
@@ -97,6 +97,12 @@ following command: `frida-ps -U`.
   `Refresh` button or restart the application and Frida server.
   	![start.gif](./gifs/start.gif)
 
+#### Preload & Sideload
+- House now support `sideload`. It supports stetho side loading at this point; which makes it easier for us to examine the UI; storage; etc.
+    ![sideload_stetho.png](./gifs/sideload_stetho.png)
+- It is experimental at this point, but more functionalities such as SSLStrip will be added under this tab.
+    
+
 #### Enumeration
 - *Enumerate all loaded classes:*
 	![enum_load.gif](./gifs/enum_load.gif)
@@ -149,7 +155,6 @@ To make House work; you would need:
 
 
 #### Cannot get device? Does not work?
-Make sure you are using **http://127.0.0.1:<PORT>** as the host.
 Also please try to restart **both** the frida server and House, if still not working, please file an issue.
 
 #### Time out error?
@@ -164,7 +169,7 @@ If you have more questions about House, or want to help extending it, feel free 
 
 [@haoOnBeat](https://twitter.com/haoOnBeat)
 
-Or send an email to: [Hao Ke](mailto:hao.ke@nccgroup.trust?Subject=House)
+Or send an email to: [Hao Ke](mailto:hao.ke@nccgroup.com?Subject=House)
 
 
 

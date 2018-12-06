@@ -21,6 +21,14 @@ function doEnv() {
     socket.emit("doEnv")
 }
 
+function sideloadStetho() {
+    socket.emit("loadStetho")
+}
+
+function unloadStetho() {
+    socket.emit("unloadStetho")
+}
+
 function get_uuid() {
     return $("#uuid").text()
 }
@@ -165,7 +173,7 @@ function getTime() {
 
 window.onload = function() {
     function getMessages() {
-        $.get('http://' + location.host  + '/messages', (data) => {
+        $.get('http://' + location.host + '/messages', (data) => {
             data = JSON.parse(data);
             if (data.exception != null) {
                 push_err_msg(data.exception);
@@ -179,14 +187,14 @@ window.onload = function() {
     }
 
     function getEnumMessages() {
-        $.get('http://' + location.host  + '/enum_messages', (data) => {
+        $.get('http://' + location.host + '/enum_messages', (data) => {
             editor4.setValue(data)
             unload_script()
         })
     }
 
     function getPackages() {
-        $.get('http://' + location.host  + '/package', (package) => {
+        $.get('http://' + location.host + '/package', (package) => {
             tmp = package
             if (package != null && package != "None" && package != "") {
                 package_html = `<div class="bg-success">
@@ -214,13 +222,13 @@ window.onload = function() {
     }
 
     function getHookScript() {
-        $.get('http://' + location.host  + '/hook_script', (data) => {
+        $.get('http://' + location.host + '/hook_script', (data) => {
             editor2.setValue(data);
         })
     }
 
     function getHookConfig() {
-        $.get('http://' + location.host  + '/hook_conf', (data) => {
+        $.get('http://' + location.host + '/hook_conf', (data) => {
             if (data == "") {
                 console.log("Retrying to get hook...")
                 setTimeout(getHookConfig, 1000);
@@ -238,20 +246,20 @@ window.onload = function() {
 
     function postClassEnum(class_to_find) {
         console.log(class_to_find)
-        $.post('http://' + location.host  + '/setEnumConfig', class_to_find)
+        $.post('http://' + location.host + '/setEnumConfig', class_to_find)
     }
 
 
     function postHook(hook_message) {
-        $.post('http://' + location.host  + '/hook', hook_message)
+        $.post('http://' + location.host + '/hook', hook_message)
     }
 
     function loadScript(script) {
-        $.post('http://' + location.host  + '/load_script', script)
+        $.post('http://' + location.host + '/load_script', script)
     }
 
     function clearHook() {
-        $.get('http://' + location.host  + '/hook_clear')
+        $.get('http://' + location.host + '/hook_clear')
     }
 
     function addMessages(m) {
@@ -487,7 +495,7 @@ window.onload = function() {
         });
 
         socket.on('EnumConfigDone', function() {
-            $.get('http://' + location.host  + '/enum_script', (data) => {
+            $.get('http://' + location.host + '/enum_script', (data) => {
                 editor3.setValue(data);
             })
         });

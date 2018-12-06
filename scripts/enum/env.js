@@ -15,7 +15,8 @@ Java.perform(function() {
             externalCacheDirectory: context.getExternalCacheDir().getAbsolutePath().toString(),
             codeCacheDirectory: 'getCodeCacheDir' in context ? context.getCodeCacheDir().getAbsolutePath().toString() : 'N/A',
             obbDir: context.getObbDir().getAbsolutePath().toString(),
-            packageCodePath: context.getPackageCodePath().toString()
+            packageCodePath: context.getPackageCodePath().toString(),
+            applicationName: String(context).split('@')[0]
         };
 
         send(env_signature + JSON.stringify(data))

@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 from houseStatic import *
-from houseGlobal import house_global,socketio, random_token
+from houseGlobal import house_global,socketio, random_token, env_html, enum_html, intercepts_html, preload_html, hooks_html
 from _frida import ProcessNotFoundError
-import traceback
+import traceback, IPython
 
 def init_conf():
     if not (os.path.exists('config')):
@@ -76,6 +76,16 @@ def get_apk_path():
     try:
         j_env_conf = json.loads(house_global.env_conf)
         return j_env_conf.get("packageCodePath")
+    except Exception as e:
+        return None
+        raise e
+
+def get_application_name():
+    with open("./config/env_conf.json",'r') as f:
+        house_global.env_conf = f.read()
+    try:
+        j_env_conf = json.loads(house_global.env_conf)
+        return j_env_conf.get("applicationName")
     except Exception as e:
         return None
         raise e
@@ -378,7 +388,17 @@ def prepare_native_script_fragment(so_name, method_name):
 
 
 def refresh():
-    return render_template('index.html', uuid=str(random_token))
+    # with open('./templates/env.html') as f:
+    #     env_html = f.read()
+    # with open('./templates/enum.html') as f:
+    #     enum_html = f.read()
+    # with open('./templates/hooks.html') as f:
+    #     hooks_html = f.read()
+    # with open('./templates/intercepts.html') as f:
+    #     intercepts_html = f.read()
+    #  with open('./templates/preload.html') as f:
+    #     preload_html = f.read()
+    return render_template('index.html', uuid=str(random_token), env = env_html, enum = enum_html, hooks = hooks_html, intercepts = intercepts_html, preload = preload_html);
 
 
 def build_hook_script():
@@ -416,6 +436,54 @@ def build_enum_script(option, class_to_find, class_pattern):
     result = render('./scripts/enum/enum_skl.js',context)
     house_global.enum_script_to_load = result
 
+def preload_script_archive():
+    getDevice()
+    with open('./scripts/misc/sideload_stetho.js') as sideload:
+        jscode = sideload.read()
+    process = house_global.device.attach(house_global.packagename)
+    script = process.create_script(jscode)
+    print('[*] Running Stetho')
+    script.load()
+
+def preload_script():
+    global Info
+    getDevice()
+    if ((house_global.packagename != '') & (house_global.device != None)):
+    
+        unload_script()
+        try:
+            print stylize("[!] Have to reload to preload, trying to spawn it..", MightBeImportant)
+            pid = house_global.device.spawn([house_global.packagename])
+            house_global.session = house_global.device.attach(pid)
+            pending = True
+
+            if get_application_name() == None:
+                print stylize("[!] What is the application name? Try refresh House", Error)
+                return
+            else:
+                jscode = render('./scripts/misc/sideload_stetho.js',{"application_name":get_application_name()})
+                process = house_global.device.attach(house_global.packagename)
+                script = process.create_script(jscode)
+                print('[*] Running Stetho')
+
+                script.load()
+
+                print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
+
+                if pending: 
+                    # IPython.embed()
+                    house_global.device.resume(pid)
+        except Exception as e:
+            print stylize("[!]sideload_script Exception: {}".format(str(e)), Error)
+            traceback.print_exc(file=sys.stdout)
+            raise e
+        
+    else:
+        print stylize('[!]Please tell me what you want!', Error)
+        raise Exception(" Failed to load script")
+
+
+
 def load_script():
     global Info
     getDevice()
@@ -435,6 +503,7 @@ def load_script():
                 pending = True
 
             house_global.script = house_global.session.create_script(house_global.script_to_load)
+            # IPython.embed()
             
             house_global.script.on('message',onMessage)
             house_global.script.load()

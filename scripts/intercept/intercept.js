@@ -26,6 +26,16 @@ function getStackTrace(){
 setTimeout(function() {
     Java.perform(function() {
         // Get Java class wrappers
+
+        Toast = Java.use("android.widget.Toast")
+        Log = Java.use("android.util.Log")
+        var ActivityThread = Java.use('android.app.ActivityThread');
+        var app = ActivityThread.currentApplication();
+        var context = null
+        if (app != null){
+            context = app.getApplicationContext();
+        }
+
         console.log("In da house..")
         {{clazz_hook}} = Java.use("{{clazz_name}}");
         clazz_Thread = Java.use("java.lang.Thread");
@@ -72,6 +82,14 @@ setTimeout(function() {
                 op.wait();
 
                 if(recv_option == "terminate"){
+                    try {
+                        console.log("[+ Frida ] Debug  Re-calculate retval!")
+                        retval = eval('this.{{ method_name }}.apply(this, arguments)')
+                        // retval = eval('this.$init.apply(this, arguments)')
+                    } catch (err) {
+                        // retval = null
+                        console.log("Exception - cannot compute retval.." + JSON.stringify(err))
+                    }
                     break
                 }
                 else if(recv_option == "intercept_param"){

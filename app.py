@@ -121,7 +121,7 @@ def main():
        \/      House        \/     \/ 
 
     Dynamic Mobile Analysis Tool
-    Contact: hao.ke@nccgroup.trust
+    Contact: hao.ke@nccgroup.com
 
 Communications will happen over USB, make sure have your android device plugged in.
     """

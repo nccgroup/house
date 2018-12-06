@@ -60,6 +60,7 @@ class houseGlobal:
 		self.enum_conf = {}
 		self.inspect_conf = {"classname": "", "methodname": "", "overloadIndex": 0, "packagename": ""}
 		self.env_conf = {"filesDirectory": "", "cacheDirectory": "", "externalCacheDirectory": "", "codeCacheDirectory": "", "packageCodePath": ""}
+		
 
 house_global = houseGlobal()
 
@@ -73,3 +74,16 @@ thread = None
 thread_lock = Lock()
 random_token = uuid.uuid4().hex
 # random_token = "deadbeef"
+
+with open('./templates/env.html') as f:
+	env_html = f.read()
+with open('./templates/enum.html') as f:
+    enum_html = f.read()
+with open('./templates/hooks.html') as f:
+    hooks_html = f.read()
+with open('./templates/intercepts.html') as f:
+    intercepts_html = f.read()
+with open('./templates/preload.html') as f:
+	preload_html = f.read()
+
+

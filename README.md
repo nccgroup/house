@@ -57,6 +57,15 @@ following command: `frida-ps -U`.
 - Observe the device information is displayed on the page, if not, click the
   `Refresh` button or restart the application and Frida server.
   	![start.gif](./gifs/start.gif)
+  	
+#### Monitor
+- Dynamically generating hook script from templates based on the [config file](https://github.com/nccgroup/house/blob/master/scripts/monitor/monitor_hook.json), monitor key operations including FILEIO, IPC, etc. 
+
+
+![monitor.png](./gifs/monitor.png)
+
+- It is experimental at this point, If you find more functions needed to be hooked, feel free to let me know or file a PR.
+
 
 #### Preload & Sideload
 - House now support `sideload`. It supports stetho side loading at this point; which makes it easier for us to examine the UI; storage; etc.

@@ -178,7 +178,7 @@ Communications will happen over USB, make sure have your android device plugged 
 
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    socketio.run(app, host = host, port = port, debug=True)
+    socketio.run(app, host = host, port = port, debug=False)
     
 
 if __name__ == '__main__':

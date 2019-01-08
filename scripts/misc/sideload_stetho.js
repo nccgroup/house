@@ -49,15 +49,18 @@ function loadStetho() {
 }
 
 
-
 Java.perform(function() {
     // var mainapp = Java.use('com.ha0k3.overloads.Testapp');
     var mainapp = Java.use('{{application_name}}');
     console.log(String(mainapp))
-    mainapp.onCreate.implementation = function() {
-        this.onCreate();
-        loadStetho();
-        console.log("[*]Stetho is running")
-        
-    };
+    try {
+        mainapp.onCreate.implementation = function() {
+            this.onCreate();
+            loadStetho();
+            console.log("[*]Stetho is running")
+
+        };
+    } catch (err) {
+        console.log("Caught Monitor exception: [File_hook.$init] => " + err);
+    }
 });

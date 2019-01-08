@@ -23,59 +23,20 @@ pip install pipenv
 pipenv install
 pipenv shell
 python app.py <PORT>
+
+# or:
+mkvirtualenv --python=/usr/local/bin/python3 house
+pip install -r requirements.txt
+workon house
+python app.py <PORT>
 ~~~
 By default, House binds to http://127.0.0.1:8000.
 
 
-## Introduction
+To get an overview of House capabilities, you can visit [user's manual](https://github.com/nccgroup/house/wiki/Overview) for details.
 
-[Frida](https://frida.re/) is a popular cross-platform dynamic instrumentation
-framework. While Frida is a handy tool that enables security researchers to
-perform different kinds of dynamic testing, including function hooking and
-interception, using it during mobile application assessments can be a chore.
-Such work often involves a slow, tedious process of writing Frida scripts
-themselves, which primarily take one of two forms: a self-contained tool
-leveraging Frida's client APIs, or batches of JavaScript to be injected by one
-of the core Frida command-line tools. The former require a fair amount of glue
-code to inject the actual scripts, and the latter often results in a large
-amount of disorganized hook code. Additionally, in both cases, the JavaScript
-code itself often requires a large amount of boilerplate for every function
-hook.
-
-To tackle this complexity, I wrote House, a runtime mobile application analysis
-toolkit with a Web GUI that is powered by Frida and written in Python. House is
-designed for helping assess mobile applications by implementing dynamic function
-hooking and intercepting and intended to make Frida script writing as simple as
-possible.
-
-
-## House
-
-[House](https://github.com/nccgroup/house) is an open source web application
-that simplifies the testing process with Frida. With House, security
-researchers can easily generate Frida scripts to perform various tasks
-including enumeration, function hooking and intercepting. It also provides an
-easy-to-use web UI for researchers to generate, customize, and manage their
-Frida scripts. House is currently focused on Android testing, but the plan
-is to extend it in the future to generalize it.
-
-House provides the following key features through its UI by automatically
-generating the underlying Frida scripts implementing them:
-
-**Class Enumeration:** Enumerates both defined and loaded Java classes within
-an application, with the ability to filter by package name.
-
-**Method Enumeration:** Enumerates all methods within a given class.
-
-**Multiple Function Tracing:** Traces and logs calls to functions declared
-through the UI.
-
-**Customize Generated Scripts:** House provides a user interface to tweak
-its generated scripts.
-
-**Function Interception:** House provides users with the ability to inspect
-and interdict live function calls through the use of hook snippets, an
-interception UI, and a live REPL.
+## News
+House now runs on **python3**, as python2 will retire in 2018.
 
 
 ## Example Usage
@@ -91,7 +52,7 @@ following command: `frida-ps -U`.
 
 - Start the House application by running app.py : `python app.py <PORT>`. 
 
-- Open a browser and navigate to <http://127.0.0.1:3137>.
+- Open a browser and navigate to <http://127.0.0.1:PORT>.
 
 - Observe the device information is displayed on the page, if not, click the
   `Refresh` button or restart the application and Frida server.
@@ -161,7 +122,7 @@ Also please try to restart **both** the frida server and House, if still not wor
 Often occues when there are multiple USB devices connected, try to restart the target application.
 
 #### Frida error?
-House has been tested using Frida version 11.0.9; there might be some issues with some other versions, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
+House has been tested using Frida version 12.2.27; there might be some issues with some other versions, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
 
 
 ## Contact

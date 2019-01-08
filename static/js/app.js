@@ -4,6 +4,9 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + house
 var device = null
 var tmp = null
 var save_script_data = null
+var monitor_messages = {"IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": []}
+var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1}
+var monitor_refresh = false;
 
 function refresh_device() {
     socket.emit("refresh_device")
@@ -23,6 +26,41 @@ function doEnv() {
 
 function sideloadStetho() {
     socket.emit("loadStetho")
+}
+
+function loadMonitor() {
+    monitor_settings['SWITCH_FILEIO'] = document.getElementById("SWITCH_FILEIO").checked ? 1 : 0
+    monitor_settings['SWITCH_SHAREDPREFERENCES'] = document.getElementById("SWITCH_SHAREDPREFERENCES").checked ? 1 : 0
+    monitor_settings['SWITCH_HTTP'] = document.getElementById("SWITCH_HTTP").checked ? 1 : 0
+    monitor_settings['SWITCH_WEBVIEW'] = document.getElementById("SWITCH_WEBVIEW").checked ? 1 : 0
+    monitor_settings['SWITCH_IPC'] = document.getElementById("SWITCH_IPC").checked ? 1 : 0
+    monitor_settings['SWITCH_MISC'] = document.getElementById("SWITCH_MISC").checked ? 1 : 0
+    // console.log(monitor_settings)
+    socket.emit("loadMonitor", { monitor_settings: monitor_settings })
+}
+
+function setMonitorRefresh(){
+    monitor_refresh = document.getElementById("SWITCH_AUTOREFRESH").checked;
+    if(monitor_refresh){
+        socket.emit("enableAutoRefresh")
+    }else{
+        socket.emit("diableAutoRefresh")
+    }
+    
+}
+
+function uncheckAll() {
+    document.getElementById("SWITCH_FILEIO").checked = false
+    document.getElementById("SWITCH_SHAREDPREFERENCES").checked = false
+    document.getElementById("SWITCH_HTTP").checked = false
+    document.getElementById("SWITCH_WEBVIEW").checked = false
+    document.getElementById("SWITCH_IPC").checked = false
+    document.getElementById("SWITCH_MISC").checked = false
+}
+
+function unloadMonitor() {
+    uncheckAll()
+    socket.emit("unloadMonitor")
 }
 
 function unloadStetho() {
@@ -59,7 +97,6 @@ function changePackage(packagename) {
     var pkg = { packagename: packagename }
     socket.emit("setPackage", pkg)
 }
-
 
 
 function showHistoryScript(path, option) {
@@ -147,6 +184,42 @@ function clear_hookMessage() {
     socket.emit("clear_hookMessage")
 }
 
+function clear_monitorMessage(type) {
+    $("#" + type + 'monitorBody').empty();
+    clear_notification(type.toUpperCase())
+    socket.emit("clear_monitorMessage", { "monitor_type": type })
+
+}
+
+function clear_monitorUI(){
+    $("#" + "fileio" + 'monitorBody').empty();
+    $("#" + "sharedpreferences" + 'monitorBody').empty();
+    $("#" + "http" + 'monitorBody').empty();
+    $("#" + "webview" + 'monitorBody').empty();
+    $("#" + "ipc" + 'monitorBody').empty();
+    $("#" + "misc" + 'monitorBody').empty();
+}
+
+function clear_monitorMessage_All() {
+    clear_monitorMessage('fileio');
+    clear_monitorMessage('sharedpreferences');
+    clear_monitorMessage('http');
+    clear_monitorMessage('webview');
+    clear_monitorMessage('ipc');
+    clear_monitorMessage('misc');
+
+    $('#NOTI_FILEIO').text("");
+    $('#NOTI_SHAREDPREFERENCES').text("");
+    $('#NOTI_HTTP').text("");
+    $('#NOTI_WEBVIEW').text("");
+    $('#NOTI_IPC').text("");
+    $('#NOTI_MISC').text("");
+}
+
+function clear_notification(tab) {
+    $("#NOTI_" + tab).text("");
+}
+
 function clear_EnumMessage() {
     editor4.setValue('')
     socket.emit("clear_EnumMessage")
@@ -184,6 +257,62 @@ window.onload = function() {
                 data.forEach(addMessages);
             }
         })
+    }
+
+    function getMonitorMessages() {
+        $.get('http://' + location.host + '/monitor', (data) => {
+            // console.log(data)
+            data = JSON.parse(data);
+
+            monitor_message = data
+            FILEIO_message = data['FILEIO']
+            SHAREDPREFERENCES_message = data['SHAREDPREFERENCES']
+            HTTP_message = data['HTTP']
+            MISC_message = data['MISC']
+            IPC_message = data['IPC']
+            WEBVIEW_message = data['WEBVIEW']
+
+            if (data.exception != null) {
+                push_err_msg(data.exception);
+                $("#fileiomonitorBody").empty();
+                console.log("Exception : " + data.exception)
+            } else {
+                // $("#filemonitorOutput").empty();
+                FILEIO_message.forEach(addMonitorMessages, { type: "FILEIO" });
+                SHAREDPREFERENCES_message.forEach(addMonitorMessages, { type: "SHAREDPREFERENCES" });
+                HTTP_message.forEach(addMonitorMessages, { type: "HTTP" });
+                MISC_message.forEach(addMonitorMessages, { type: "MISC" });
+                IPC_message.forEach(addMonitorMessages, { type: "IPC" });
+                WEBVIEW_message.forEach(addMonitorMessages, { type: "WEBVIEW" });
+            }
+        })
+    }
+
+
+    function renderMonitorMessages(data) {
+
+        // data = monitor_messages
+
+        monitor_message = data
+        FILEIO_message = data['FILEIO']
+        SHAREDPREFERENCES_message = data['SHAREDPREFERENCES']
+        HTTP_message = data['HTTP']
+        MISC_message = data['MISC']
+        IPC_message = data['IPC']
+        WEBVIEW_message = data['WEBVIEW']
+
+        if (data.exception != null) {
+            push_err_msg(data.exception);
+            console.log("Exception : " + data.exception)
+        } else {
+            clear_monitorUI()
+            FILEIO_message.forEach(addMonitorMessages, { type: "FILEIO" });
+            SHAREDPREFERENCES_message.forEach(addMonitorMessages, { type: "SHAREDPREFERENCES" });
+            HTTP_message.forEach(addMonitorMessages, { type: "HTTP" });
+            MISC_message.forEach(addMonitorMessages, { type: "MISC" });
+            IPC_message.forEach(addMonitorMessages, { type: "IPC" });
+            WEBVIEW_message.forEach(addMonitorMessages, { type: "WEBVIEW" });
+        }
     }
 
     function getEnumMessages() {
@@ -244,6 +373,24 @@ window.onload = function() {
         })
     }
 
+    function getMonitorConfig() {
+        $.get('http://' + location.host + '/monitor_conf', (data) => {
+            if (data == "") {
+                console.log("Retrying to get monitor_conf...")
+                setTimeout(getHookConfig, 1000);
+            }
+            monitor_settings = JSON.parse(data)
+            // console.log(monitor_settings)
+            uncheckAll()
+            document.getElementById("SWITCH_FILEIO").checked = (monitor_settings.SWITCH_FILEIO == 1) ? true : false
+            document.getElementById("SWITCH_SHAREDPREFERENCES").checked = (monitor_settings.SWITCH_SHAREDPREFERENCES == 1) ? true : false
+            document.getElementById("SWITCH_HTTP").checked = (monitor_settings.SWITCH_HTTP == 1) ? true : false
+            document.getElementById("SWITCH_WEBVIEW").checked = (monitor_settings.SWITCH_WEBVIEW == 1) ? true : false
+            document.getElementById("SWITCH_IPC").checked = (monitor_settings.SWITCH_IPC == 1) ? true : false
+            document.getElementById("SWITCH_MISC").checked = (monitor_settings.SWITCH_MISC == 1) ? true : false
+        })
+    }
+
     function postClassEnum(class_to_find) {
         console.log(class_to_find)
         $.post('http://' + location.host + '/setEnumConfig', class_to_find)
@@ -289,11 +436,57 @@ window.onload = function() {
         console.log("updated finished")
     }
 
+    function addMonitorMessages(m) {
+        // console.log(this.type);
+        var methodname = 'N.A'
+        var args = ''
+        var retval = 'VOID'
+        if (m.methodname != null) {
+            methodname = m.methodname;
+        }
+        if (m.args != null) {
+            args = m.args;
+        }
+        if (m.retval != null) {
+            retval = m.retval;
+        }
+
+        if (m.exception != null) {
+            exception = m.exception;
+            // $('#outputTbl > tbody:last').append('<code>Exception: ' + exception + '</code>');
+            push_err_msg("[!] Hooks Error: " + exception);
+        } else {
+            switch (this.type) {
+                case 'FILEIO':
+                    $('#fileiomonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
+                    break;
+                case 'SHAREDPREFERENCES':
+                    $('#sharedpreferencesmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
+                    break;
+                case 'HTTP':
+                    $('#httpmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
+                    break;
+                case 'IPC':
+                    $('#ipcmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
+                    break;
+                case 'WEBVIEW':
+                    $('#webviewmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
+                    break;
+                default:
+                    $('#miscmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
+
+            }
+        }
+
+    }
+
 
     function overwrite() {
         getMessages()
+        getMonitorMessages()
         getHookConfig()
         getHookScript()
+        getMonitorConfig()
     }
 
 
@@ -317,10 +510,30 @@ window.onload = function() {
         getPackages()
         overwrite()
 
+        $.get('http://' + location.host + '/AutoRefresh', (data) => {
+            monitor_refresh = (data == '1') ? true : false
+            document.getElementById("SWITCH_AUTOREFRESH").checked = monitor_refresh ? true : false
+        })
+
+        setInterval(()=>{
+            if(monitor_refresh){
+                socket.emit("get_monitor_message");
+            }
+        }, 1500)
+
         socket.emit('fetchInspect');
+        // socket.emit('check_monitor_running');
 
         socket.on('log', function(msg) {
             console.log(("[+]Log: " + msg.data))
+        });
+
+        socket.on('monitor_running_status', function(msg) {
+            if (msg.running == 1) {
+                $("#monitor_running").text("Running");
+            } else {
+                $("#monitor_running").text("Not Running");
+            }
         });
 
         socket.on('select_device', function(msg) {
@@ -402,6 +615,26 @@ window.onload = function() {
         socket.on('new_hook_message', function(msg) {
             getMessages()
         });
+
+        // socket.on('update_monitor_message', function(msg) {
+        //     $('#NOTI_' + msg.mon_type).text("New");
+        //     monitor_messages = msg.monitor_message;
+        //     renderMonitorMessages(monitor_messages)
+        //     // getMonitorMessages()
+        // });
+
+        socket.on('update_monitor_message', function(msg) {
+            // $('#NOTI_' + msg.mon_type).text("New");
+            for (i in msg.monitor_new){
+                if (msg.monitor_new[i] == null){break;}
+                else{$('#NOTI_' + msg.monitor_new[i]).text("New");}
+            }
+            monitor_messages = msg.monitor_message;
+            renderMonitorMessages(monitor_messages)
+            // getMonitorMessages()
+        });
+
+
 
         socket.on('new_intercept', function(msg) {
             editor5.setValue(msg.data)
@@ -546,9 +779,10 @@ window.onload = function() {
         })
 
         $("#add_hook").click(() => {
-            var hook_message = { classname: $("#classname").val(), methodname: $("#method").val() }
+            var hook_message = { classname: $("#classname").val(), methodname: $("#method").val(), overload_type: $("#overload_type").val() }
             $("#classname").val('')
             $("#method").val('')
+            $("#overload_type").val('')
             appendLn(editor, JSON.stringify(hook_message))
 
         })

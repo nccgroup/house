@@ -31,19 +31,24 @@ class houseGlobal:
 		self.session = None
 		self.device_manager = None
 		self.device_dict = {}
- 		self.device = None
+		self.device = None
 		self.packagename = ""        # can have up to 1 package for each session
 		self.script_to_load = ''
 		self.script = None
+		self.stetho_script = None
+		self.monitor_script = None
 		self.enum_script_to_load = ''
 		self.hook_script = ''
 		self.intercept_script = ''
+		self.monitor_script = ''
 		self.enum_class = ''
 		self.enum_class_pattern = ''
 		self.enum_option = ''
 		self.onMessageException = ''
 		self.html_output = ""
 		self.messages = []
+		self.monitor_message = {"FILEIO":[], "IPC": [], "WEBVIEW":[], "HTTP":[], "MISC":[], "SHAREDPREFERENCES": []}
+		self.monitor_queue = set()
 		self.new_hookmsg = False
 		self.enum_messages = []
 		self.new_inspect = False
@@ -60,6 +65,15 @@ class houseGlobal:
 		self.enum_conf = {}
 		self.inspect_conf = {"classname": "", "methodname": "", "overloadIndex": 0, "packagename": ""}
 		self.env_conf = {"filesDirectory": "", "cacheDirectory": "", "externalCacheDirectory": "", "codeCacheDirectory": "", "packageCodePath": ""}
+		self.monitor_conf = {
+							  "SWITCH_FILEIO": 1,
+							  "SWITCH_HTTP": 1,
+							  "SWITCH_WEBVIEW": 1,
+							  "SWITCH_IPC": 1,
+							  "SWITCH_MISC": 1,
+							  "SWITCH_SHAREDPREFERENCES": 1
+							}
+		self.monitor_refresh = 0
 		
 
 house_global = houseGlobal()
@@ -75,15 +89,18 @@ thread_lock = Lock()
 random_token = uuid.uuid4().hex
 # random_token = "deadbeef"
 
-with open('./templates/env.html') as f:
-	env_html = f.read()
-with open('./templates/enum.html') as f:
-    enum_html = f.read()
-with open('./templates/hooks.html') as f:
-    hooks_html = f.read()
-with open('./templates/intercepts.html') as f:
-    intercepts_html = f.read()
-with open('./templates/preload.html') as f:
-	preload_html = f.read()
+# with open('./templates/env.html') as f:
+# 	env_html = f.read()
+# with open('./templates/enum.html') as f:
+#     enum_html = f.read()
+# with open('./templates/hooks.html') as f:
+#     hooks_html = f.read()
+# with open('./templates/intercepts.html') as f:
+#     intercepts_html = f.read()
+# with open('./templates/preload.html') as f:
+# 	preload_html = f.read()
+# with open('./templates/monitor.html') as f:
+# 	monitor_html = f.read()
+
 
 

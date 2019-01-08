@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 from houseStatic import *
-from houseGlobal import house_global,socketio, random_token, env_html, enum_html, intercepts_html, preload_html, hooks_html
+from houseGlobal import house_global,socketio, random_token
+# from houseGlobal import env_html, enum_html, intercepts_html, preload_html, hooks_html, monitor_html
 from _frida import ProcessNotFoundError
 import traceback, IPython
 
@@ -50,13 +51,24 @@ def init_cache():
         os.makedirs('./cache/intercept')
     if not (os.path.exists('cache/current')):
         os.makedirs('./cache/current')
+    if not (os.path.exists('cache/log')):
+        os.makedirs('./cache/log')
 
-    if not (os.path.isfile("./cache/current/enum_script")):
-        with open('./cache/current/enum_script','w') as f:
+    if not (os.path.isfile("./cache/current/enum_script.js")):
+        with open('./cache/current/enum_script.js','w') as f:
             f.write('')
-    if not (os.path.isfile("./cache/current/hook_script")):
-        with open('./cache/current/hook_script','w') as f:
+    if not (os.path.isfile("./cache/current/hook_script.js")):
+        with open('./cache/current/hook_script.js','w') as f:
             f.write('')
+    if not (os.path.isfile("./cache/log/message.json")):
+        with open("./cache/log/message.json",'w') as f:
+            f.write('')
+    if not (os.path.isfile("./cache/log/monitor.json")):
+        with open("./cache/log/monitor.json",'w') as f:
+            f.write('')
+
+
+
 
 def make_tree(path, option):
     tree = dict(name=os.path.basename(path), children=[])
@@ -100,15 +112,19 @@ def update_conf():
     house_global.enum_conf["enum_option"] = house_global.enum_option
 
     house_global.hook_conf['hooks_list'] = house_global.hooks_list
-    with open('./config/hook_conf.json','wb') as f:
+    with open('./config/hook_conf.json','w') as f:
+        # IPython.embed()
         f.write(json.dumps(house_global.hook_conf))
 
-    with open('./config/enum_conf.json','wb') as f:
+    with open('./config/enum_conf.json','w') as f:
         f.write(json.dumps(house_global.enum_conf))
 
-    with open('./config/intercept_conf.json','wb') as f:
-        print stylize("[+] Updating intercept_conf with {}".format(json.dumps(house_global.inspect_conf)),Info)
+    with open('./config/intercept_conf.json','w') as f:
+        # print stylize("[+] Updating intercept_conf with {}".format(json.dumps(house_global.inspect_conf)),Info)
         f.write(json.dumps(house_global.inspect_conf))
+
+    with open('./config/monitor_conf.json','w') as f:
+        f.write(json.dumps(house_global.monitor_conf))
 
 def init_settings():
     try:
@@ -120,23 +136,26 @@ def init_settings():
 
 def cache_script(option, script):
     if option == "enum_cache":
-        with open('./cache/current/enum_script','wb') as f:
+        with open('./cache/current/enum_script.js','w') as f:
             f.write(script)
     elif option == "hooks_cache":
-        with open('./cache/current/hook_script','wb') as f:
+        with open('./cache/current/hook_script.js','w') as f:
             f.write(script)
     elif option == "intercept_cache":
-        with open('./cache/current/intercept_script','wb') as f:
+        with open('./cache/current/intercept_script.js','w') as f:
+            f.write(script)
+    elif option == "monitor_cache":
+        with open('./cache/current/monitor_script.js','w') as f:
             f.write(script)
     else:
-        print stylize("[!] Invalid cache script type", Error)
+        print (stylize("[!] Invalid cache script type", Error))
 
 def clear_hook_msg():
     house_global.messages = []
     socketio.emit("clear_hook_msg")
 
 def cache_inspect_html():
-    with open('./config/inspect_cache.html','wb') as f:
+    with open('./config/inspect_cache.html','w') as f:
         f.write(house_global.inspect_result)
 
 def checkok():
@@ -153,13 +172,13 @@ def setPackage(pkgname):
     house_global.inspect_conf["classname"] = ""
     house_global.inspect_conf["methodname"] = ""
     house_global.inspect_conf["overloadIndex"] = 0
-    with open('./config/inspect_cache.html','wb') as f:
-        f.write("")
+    with open('./config/inspect_cache.html','w') as f:
+        f.write(" ")
     update_conf()
     
 def setDevice(id):
     house_global.device = house_global.device_manager.get_device(id)
-    print stylize("[+]Changing Device with id {}".format(id), MightBeImportant)
+    print (stylize("[+]Changing Device with id {}".format(id), MightBeImportant))
     try:
         socketio.emit('show_selected_device',
                   {'device_list': json.dumps(house_global.device_dict), 'selection': str(house_global.device.id)},
@@ -170,7 +189,7 @@ def setDevice(id):
 
 def getDevice():
     try:
-        print stylize("[+] Trying to get device..", Info)
+        print (stylize("[+] Trying to get device..", Info))
         house_global.device_dict = {}
         house_global.device_manager = frida.get_device_manager()
         device_list = house_global.device_manager.enumerate_devices()
@@ -204,16 +223,69 @@ def getDevice():
         socketio.emit('update_device', 
                 {'data': cgi.escape(str(house_global.device))},          
                 namespace='/eventBus')
-        print stylize(str(e), Error)
+        print (stylize(str(e), Error))
         # raise e
+
+def onMonitorMessage(message,data):
+    house_global.onMessageException = ''
+
+    if message['type'] == 'send':
+        if(message.get('payload') != None):
+            monitor_log = str(message.get('payload'))
+            # monitor_log = u''.join(monitor_log).encode('utf-8').strip()
+        else:
+            monitor_log = "No message payload.."
+    elif message['type'] == 'error':
+        if(message.get('description') != None):
+            house_global.onMessageException = cgi.escape(message.get('description'))
+        else:
+            house_global.onMessageException = 'No description'
+        print (stylize("[!]Monitor Error: {}".format(house_global.onMessageException), Error))
+        socketio.emit('new_error_message',
+                              {'data': "[!] {}".format(house_global.onMessageException)},
+                              namespace='/eventBus')
+        monitor_log = message.get('payload') if message.get('payload') else ''
+        
+    j_monitor_log = json.loads(monitor_log)
+
+    mon_type = j_monitor_log.get("monitor_type")
+    args = j_monitor_log.get("arg_dump")
+    method = j_monitor_log.get("method_info")
+    retval = j_monitor_log.get("retval_dump")
+    if args != None:
+        args = cgi.escape(args).replace(linebreak,'<br>')
+    if method != None:
+        method = cgi.escape(method).replace(linebreak,'<br>')
+    if retval != None:
+        retval = cgi.escape(retval).replace(linebreak,'<br>')
+    monitor_entry = {"methodname":method,"args":args,"retval":retval}
+
+    # "types" : ["fileIO", "HTTP", "WEBVIEW", "IPC", "MISC", "IGNORE"]
+    if (mon_type != None) & (mon_type != "IGNORE"):
+        if mon_type == "fileIO":
+            house_global.monitor_message['FILEIO'].insert(0,monitor_entry)
+        elif mon_type == "SHAREDPREFERENCES":
+            house_global.monitor_message['SHAREDPREFERENCES'].insert(0,monitor_entry)
+        elif mon_type == "HTTP":
+            house_global.monitor_message['HTTP'].insert(0,monitor_entry)
+        elif mon_type == "WEBVIEW":
+            house_global.monitor_message['WEBVIEW'].insert(0,monitor_entry)
+        elif mon_type == "IPC":
+            house_global.monitor_message['IPC'].insert(0,monitor_entry)
+        else: # misc
+            mon_type = "MISC"
+            house_global.monitor_message['MISC'].insert(0,monitor_entry)
+    # socketio.emit('update_monitor_message', {'mon_type': mon_type.upper(), 'monitor_message': house_global.monitor_message},namespace='/eventBus')
+    house_global.monitor_queue.add(mon_type.upper())
+
 
 def onMessage(message,data):
     house_global.onMessageException = ''
 
     if message['type'] == 'send':
         if(message.get('payload') != None):
-            info = message.get('payload')
-            info = u''.join(info).encode('utf-8').strip()
+            info = str(message.get('payload'))
+            # info = str(u''.join(info).encode('utf-8').strip())
         else:
             info = "No message payload.."
     elif message['type'] == 'error':
@@ -221,14 +293,16 @@ def onMessage(message,data):
             house_global.onMessageException = cgi.escape(message.get('description'))
         else:
             house_global.onMessageException = 'No description'
-        print stylize("[!]Error: {}".format(house_global.onMessageException), Error)
+        print (stylize("[!]Error: {}".format(house_global.onMessageException), Error))
         socketio.emit('new_error_message',
                               {'data': "[!] {}".format(house_global.onMessageException)},
                               namespace='/eventBus')
         info = message.get('payload') if message.get('payload') else ''
-
+    # IPython.embed()
     if "t3llm3mor3ab0ut1t" in info:
         env_info = info.replace("t3llm3mor3ab0ut1t",'')
+        # print (env_info)
+        # IPython.embed()
         j_env_info = json.loads(env_info)
 
         if j_env_info.get("packageCodePath") != None:
@@ -298,7 +372,7 @@ def onMessage(message,data):
                   <label class="mr-sm-2"> Overloads: </label>
                   <select class="custom-select mr-sm-2" id="indexSelect">
             """
-            for i in xrange(overload_count):
+            for i in range(0, overload_count):
                 html_output += """
                 <option value={}><code>{}</code></option>
                 """.format(str(i),cgi.escape(str(json.dumps(overload_info[i]))).replace("\\\"",""))
@@ -347,13 +421,14 @@ def render(tpl_path, context):
         loader=jinja2.FileSystemLoader(path or './')
     ).get_template(filename).render(context)
 
-def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0):
+def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0,overload_type=None):
     context = {
     'clazz_name' : '',
     'method_name' : '',
     'clazz_hook' : '',
     'method_hook' : '',
-    'overloadIndex' : str(overloadIndex)
+    'overloadIndex' : str(overloadIndex),
+    'overload_type' : overload_type
     }
     if(clazz_name != None) & (clazz_name != '') & (method_name != None) & (method_name != ''):
         context['clazz_name'] = clazz_name
@@ -369,8 +444,27 @@ def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0)
             result = render('./scripts/hook/hook_frag.js',context)
         return result
     else:
-        print stylize("[!]prepare_script_fragment Error with {} - {} - {} ".format(clazz_name, method_name,script_type),Error)
+        print (stylize("[!]prepare_script_fragment Error with {} - {} - {} ".format(clazz_name, method_name,script_type),Error))
         return ''
+
+def prepare_monitor_fragment(clazz_name, method_name, monitor_type='misc'):
+    context = {
+    'clazz_name' : '',
+    'method_name' : '',
+    'clazz_hook' : '',
+    'method_hook' : '',
+    'monitor_type': ''
+    }
+    result = ''
+    if(clazz_name != None) & (clazz_name != '') & (method_name != None) & (method_name != ''):
+        context['clazz_name'] = clazz_name
+        context['method_name'] = method_name
+        context['clazz_hook'] = str(clazz_name.split('.')[-1]) + '_hook'
+        context['method_hook'] = str(method_name.replace('.','_')) + '_hook'
+        context['monitor_type'] = monitor_type
+
+        result = render('./scripts/monitor/monitor_frag.js',context)
+    return result
 
 def prepare_native_script_fragment(so_name, method_name):
     context = {
@@ -383,23 +477,24 @@ def prepare_native_script_fragment(so_name, method_name):
         result = render('./scripts/hook/native_hook_frag.js',context)
         return result
     else:
-        print stylize("[!]prepare_native_script_fragment Error with {} - {} ".format(so_name, method_name),Error)
+        print (stylize("[!]prepare_native_script_fragment Error with {} - {} ".format(so_name, method_name),Error))
         return ''
 
 
 def refresh():
-    # with open('./templates/env.html') as f:
-    #     env_html = f.read()
-    # with open('./templates/enum.html') as f:
-    #     enum_html = f.read()
-    # with open('./templates/hooks.html') as f:
-    #     hooks_html = f.read()
-    # with open('./templates/intercepts.html') as f:
-    #     intercepts_html = f.read()
-    #  with open('./templates/preload.html') as f:
-    #     preload_html = f.read()
-    return render_template('index.html', uuid=str(random_token), env = env_html, enum = enum_html, hooks = hooks_html, intercepts = intercepts_html, preload = preload_html);
-
+    with open('./templates/env.html') as f:
+        env_html = f.read()
+    with open('./templates/enum.html') as f:
+        enum_html = f.read()
+    with open('./templates/hooks.html') as f:
+        hooks_html = f.read()
+    with open('./templates/intercepts.html') as f:
+        intercepts_html = f.read()
+    with open('./templates/preload.html') as f:
+        preload_html = f.read()
+    with open('./templates/monitor.html') as f:
+        monitor_html = f.read()
+    return render_template('index.html', uuid=str(random_token), env = env_html, enum = enum_html, hooks = hooks_html, intercepts = intercepts_html, preload = preload_html, monitor = monitor_html);
 
 def build_hook_script():
     hooks_list = house_global.hook_conf['hooks_list']
@@ -408,12 +503,15 @@ def build_hook_script():
     realscript = ""
     nativescript = ""
 
-    for i in xrange(hooks_number):
-        entry = hooks_list[i]
+    # for i in xrange(hooks_number):
+    for entry in hooks_list:
+        # entry = hooks_list[i]
         clazz_name = entry['classname']
         method_name = entry['methodname']
+        overload_type = entry.get('overload_type')
+        # IPython.embed()
         if ".so" not in clazz_name:
-            realscript += prepare_script_fragment(clazz_name, method_name, "hook")
+            realscript += prepare_script_fragment(clazz_name, method_name, "hook", overload_type = overload_type)
             realscript += "\n// Added Hook \n"
         else:
             nativescript += prepare_native_script_fragment(clazz_name, method_name)
@@ -425,13 +523,42 @@ def build_hook_script():
 
     cache_script("hooks_cache", house_global.hook_script)
 
+def build_monitor_script():
+    with open("./scripts/monitor/monitor_hook.json") as monitor_conf:
+        monitor_conf_rd = monitor_conf.read()
+    monitor_list = json.loads(monitor_conf_rd)
+    file_monitor_list = monitor_list.get("monitor_list")
+    render_monitor_list = []
+
+    try:
+        for file_monitor_list_entry in file_monitor_list:
+            type_to_build = file_monitor_list_entry['type']
+            method_to_build = file_monitor_list_entry['methodname']
+            if house_global.monitor_conf.get('SWITCH_' + type_to_build.upper()) == 1:
+                render_monitor_list.append(file_monitor_list_entry)
+    except Exception as e:
+        raise e
+    
+    monitorscript_fragment = ""
+    
+
+    for render_monitor_list_entry in render_monitor_list:
+        clazz_name = render_monitor_list_entry['classname']
+        method_name = render_monitor_list_entry['methodname']
+        monitor_type = render_monitor_list_entry['type']
+
+        monitorscript_fragment += prepare_monitor_fragment(clazz_name, method_name,monitor_type)
+    context = {'scripts': monitorscript_fragment}
+    result = render('./scripts/monitor/monitor_tpl.js',context)
+
+    house_global.monitor_script = result
+    cache_script("monitor_cache", house_global.monitor_script)
 
 def build_enum_script(option, class_to_find, class_pattern):
     if (class_to_find != None) & (".so" in class_to_find):
         option = "enumLibSo"
 
     context = {'option': option, 'class_to_find': class_to_find, 'class_pattern': class_pattern, 'apk_path': get_apk_path()}
-    print context
 
     result = render('./scripts/enum/enum_skl.js',context)
     house_global.enum_script_to_load = result
@@ -449,37 +576,37 @@ def preload_script():
     global Info
     getDevice()
     if ((house_global.packagename != '') & (house_global.device != None)):
-    
-        unload_script()
+        # IPython.embed()
+        unload_script("stetho")
         try:
-            print stylize("[!] Have to reload to preload, trying to spawn it..", MightBeImportant)
+            print (stylize("[!] Have to reload to preload, trying to spawn it..", MightBeImportant))
             pid = house_global.device.spawn([house_global.packagename])
             house_global.session = house_global.device.attach(pid)
             pending = True
 
             if get_application_name() == None:
-                print stylize("[!] What is the application name? Try refresh House", Error)
+                print (stylize("[!] What is the application name? Try refresh House", Error))
                 return
             else:
                 jscode = render('./scripts/misc/sideload_stetho.js',{"application_name":get_application_name()})
                 process = house_global.device.attach(house_global.packagename)
-                script = process.create_script(jscode)
+                house_global.stetho_script = process.create_script(jscode)
                 print('[*] Running Stetho')
 
-                script.load()
+                house_global.stetho_script.load()
 
-                print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
+                print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
                 if pending: 
                     # IPython.embed()
                     house_global.device.resume(pid)
         except Exception as e:
-            print stylize("[!]sideload_script Exception: {}".format(str(e)), Error)
+            print (stylize("[!]sideload_script Exception: {}".format(str(e)), Error))
             traceback.print_exc(file=sys.stdout)
             raise e
         
     else:
-        print stylize('[!]Please tell me what you want!', Error)
+        print (stylize('[!]Please tell me what you want!', Error))
         raise Exception(" Failed to load script")
 
 
@@ -497,7 +624,7 @@ def load_script():
                 pid = house_global.device.get_process(house_global.packagename).pid
                 house_global.session = house_global.device.attach(house_global.packagename)
             except ProcessNotFoundError as e:
-                print stylize("[!] Process not found, trying to spawn it..", MightBeImportant)
+                print (stylize("[!] Process not found, trying to spawn it..", MightBeImportant))
                 pid = house_global.device.spawn([house_global.packagename])
                 house_global.session = house_global.device.attach(pid)
                 pending = True
@@ -508,44 +635,83 @@ def load_script():
             house_global.script.on('message',onMessage)
             house_global.script.load()
 
-            print stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info)
+            print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
             if pending: 
                 # IPython.embed()
                 house_global.device.resume(pid)
         except Exception as e:
-            print stylize("[!]load_script Exception: {}".format(str(e)), Error)
+            print (stylize("[!]load_script Exception: {}".format(str(e)), Error))
             traceback.print_exc(file=sys.stdout)
             raise e
         
     else:
-        print stylize('[!]Please tell me what you want!', Error)
+        print (stylize('[!]Please tell me what you want!', Error))
         raise Exception(" Failed to load script")
+
+def loadMonitor():
+    global Info
+    getDevice()
+    try:
+        unload_script("monitor")
+    except Exception as e:
+        print (stylize(str(e), MightBeImportant))
+    
+    print (stylize("[!]Trying to load monitor script..", Info))
+    build_monitor_script()
+    if ((house_global.monitor_script != '') & (house_global.packagename != '') & (house_global.device != None)):
+        try:
+            pending = False
+            try:   
+                pid = house_global.device.get_process(house_global.packagename).pid
+                house_global.session = house_global.device.attach(house_global.packagename)
+            except ProcessNotFoundError as e:
+                print (stylize("[!] Process not found, trying to spawn it..", MightBeImportant))
+                pid = house_global.device.spawn([house_global.packagename])
+                house_global.session = house_global.device.attach(pid)
+                pending = True
+
+            house_global.monitor_script = house_global.session.create_script(house_global.monitor_script)
+            # print house_global.monitor_script
+            # IPython.embed()
+            
+            house_global.monitor_script.on('message',onMonitorMessage)
+            house_global.monitor_script.load()
+            print (stylize('[+] Loading the monitor script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+
+            if pending: 
+                # IPython.embed()
+                house_global.device.resume(pid)
+        except Exception as e:
+            print (stylize("[!]loadMonitor Exception: {}".format(str(e)), Error))
+            traceback.print_exc(file=sys.stdout)
+            raise e
+    
+
 
 def quitRepl():
     if (house_global.script):
         house_global.script.post({'type': 'input', 'payload': 'exit', 'option': "terminate"})
     else:
-        print stylize("No repl to terminate", MightBeImportant)
+        print (stylize("No repl to terminate", MightBeImportant))
 
-def unload_script():
+def unload_script(type = "main"):
     if(house_global.session):
-        print stylize('[-] Unload the script..', Info)
-        try:
-            quitRepl()
-            house_global.session.detach()
-        except Exception as e:
-            print stylize('[!] looks like {}'.format(str(e)), MightBeImportant)
-    else:
-        print stylize("[-] No script exists", MightBeImportant)
+        print (stylize('[-] Unload the script..', Info))
 
-# def unload_script():
-#     if(house_global.script):
-#         print stylize('[-] Unload the script..', Info)
-#         try:
-#             quitRepl()
-#             house_global.script.unload()
-#         except Exception as e:
-#             print stylize('[!] looks like {}'.format(str(e)), MightBeImportant)
-#     else:
-#         print stylize("[-] No script exists", MightBeImportant)
+        try:
+            if type == "stetho":
+                house_global.stetho_script.unload()
+            elif type == "monitor":
+                # IPython.embed()
+                house_global.monitor_script.unload()
+            else:
+                quitRepl()
+                house_global.script.unload()
+            # house_global.session.detach()
+        except Exception as e:
+            print (stylize('[!] unload_script: looks like {}'.format(str(e)), MightBeImportant))
+    else:
+        print (stylize("[-] No script exists", MightBeImportant))
+
+

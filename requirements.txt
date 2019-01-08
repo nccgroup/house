@@ -1,0 +1,8 @@
+flask
+colored
+frida
+jinja2
+requests
+flask-socketio
+flask-login
+

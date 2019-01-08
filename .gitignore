@@ -1,6 +1,8 @@
+__pycache__/
 Pipfile.lock
 *.pyc
 .DS_Store
 .DS_Store?
 cache/
 config/
+README.bak

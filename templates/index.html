@@ -39,6 +39,7 @@
     <script type=text/javascript src="{{
       url_for('static', filename='js/app.js') }}"></script>
     <script type=text/javascript src="{{ url_for('static', filename='src-min/ace.js') }}"></script>
+
     <style>
         .row.content {
         height: 550px
@@ -68,6 +69,7 @@
             <div class="container-fluid">
                 <ul class="nav nav-tabs">
                     <li class="nav active"><a data-toggle="tab" href="#env"><i class="glyphicon glyphicon-off"></i> Start</a></li>
+                    <li class="nav"><a data-toggle="tab" href="#monitor"><i class="glyphicon glyphicon glyphicon-phone"></i> Monitor</a></li>
                     <li class="nav"><a data-toggle="tab" href="#preload"><i class="glyphicon glyphicon glyphicon-flash"></i> Preload</a></li>
                     <li class="nav"><a data-toggle="tab" href="#enum"><i class="glyphicon glyphicon-eye-open"></i> Enumeration</a></li>
                     <li class="nav"><a data-toggle="tab" href="#hooks"><i class="glyphicon glyphicon-magnet"></i> Hooks</a></li>
@@ -77,6 +79,9 @@
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="env">
                         {{ env | safe}}
+                    </div>
+                    <div class="tab-pane fade" id="monitor">
+                        {{ monitor | safe}}
                     </div>
                     <div class="tab-pane fade" id="preload">
                         {{ preload | safe}}

@@ -53,14 +53,15 @@ setTimeout(function() {
         var recv_time = ''
         var recv_data = ''
 
-        {{ method_hook }} = eval('{{clazz_hook}}.{{ method_name }}.overloads[{{overloadIndex}}]')
+        {{clazz_hook}}_{{ method_hook }} = eval('{{clazz_hook}}.{{ method_name }}.overloads[{{overloadIndex}}]')
 
-        {{ method_hook }}.implementation = function() {
+        {{clazz_hook}}_{{ method_hook }}.implementation = function() {
             var sendback = ''
             args = arguments
             // retval = eval('this.{{ method_name }}.apply(this, arguments)')
             try {
                 retval = eval('this.{{ method_name }}.apply(this, arguments)')
+                console.log("[INTERCEPT]retval: ", retval)
                 // retval = eval('this.$init.apply(this, arguments)')
             } catch (err) {
                 retval = null

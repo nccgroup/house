@@ -1,0 +1,199 @@
+{
+  "types": [
+    "fileIO",
+    "http",
+    "webview",
+    "ipc",
+    "misc",
+    "sharedpreferences",
+    "ignore"
+  ],
+  "comment": "This is the file containing all general monitor_hooks, change type to 'ignore' if you don't it to be hooked;",
+  "monitor_list": [
+    {
+      "classname": "java.io.File",
+      "methodname": "$init",
+      "type": "fileIO"
+    },
+    {
+      "classname": "java.io.File",
+      "methodname": "createTempFile",
+      "type": "fileIO"
+    },
+    {
+      "classname": "java.io.FileWriter",
+      "methodname": "$init",
+      "type": "fileIO"
+    },
+    {
+      "classname": "java.io.FileWriter",
+      "methodname": "write",
+      "type": "fileIO"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl$EditorImpl",
+      "methodname": "putString",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl$EditorImpl",
+      "methodname": "putBoolean",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl$EditorImpl",
+      "methodname": "putInt",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl$EditorImpl",
+      "methodname": "putLong",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl$EditorImpl",
+      "methodname": "putFloat",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl$EditorImpl",
+      "methodname": "commit",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl$EditorImpl",
+      "methodname": "apply",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl",
+      "methodname": "getString",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl",
+      "methodname": "getStringSet",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl",
+      "methodname": "getBoolean",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl",
+      "methodname": "getFloat",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl",
+      "methodname": "getLong",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl",
+      "methodname": "getStringSet",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "android.app.SharedPreferencesImpl",
+      "methodname": "contains",
+      "type": "SHAREDPREFERENCES"
+    },
+    {
+      "classname": "java.net.HttpURLConnection",
+      "methodname": "$init",
+      "type": "HTTP"
+    },
+    {
+      "classname": "com.android.okhttp.OkHttpClient",
+      "methodname": "open",
+      "type": "HTTP"
+    },
+    {
+      "classname": "android.webkit.WebView",
+      "methodname": "loadUrl",
+      "type": "WEBVIEW"
+    },
+    {
+      "classname": "android.webkit.WebView",
+      "methodname": "addJavascriptInterface",
+      "type": "WEBVIEW"
+    },
+    {
+      "classname": "android.webkit.WebView",
+      "methodname": "loadDataWithBaseURL",
+      "type": "WEBVIEW"
+    },
+    {
+      "classname": "android.webkit.WebView",
+      "methodname": "loadData",
+      "type": "WEBVIEW"
+    },
+    {
+      "classname": "android.webkit.WebView",
+      "methodname": "evaluateJavascript",
+      "type": "WEBVIEW"
+    },
+    {
+      "classname": "android.content.ContextWrapper",
+      "methodname": "startActivities",
+      "type": "IPC"
+    },
+    {
+      "classname": "android.content.ContextWrapper",
+      "methodname": "startService",
+      "type": "IPC"
+    },
+    {
+      "classname": "android.content.ContextWrapper",
+      "methodname": "startActivity",
+      "type": "IPC"
+    },
+    {
+      "classname": "android.content.ContextWrapper",
+      "methodname": "sendBroadcast",
+      "type": "IGNORE"
+    },
+    {
+      "classname": "android.content.ContextWrapper",
+      "methodname": "registerReceiver",
+      "type": "IGNORE"
+    },
+    {
+      "classname": "android.content.Intent",
+      "methodname": "getStringExtra",
+      "type": "IGNORE"
+    },
+    {
+      "classname": "android.content.Intent",
+      "methodname": "getStringArrayExtra",
+      "type": "IGNORE"
+    },
+    {
+      "classname": "android.content.Intent",
+      "methodname": "putExtra",
+      "type": "IPC"
+    },
+    {
+      "classname": "android.content.Intent",
+      "methodname": "parseUri",
+      "type": "IGNORE"
+    },
+    {
+      "classname": "android.content.Intent",
+      "methodname": "registerReceiver",
+      "type": "IGNORE"
+    },
+    {
+      "classname": "android.content.Intent",
+      "methodname": "registerReceiver",
+      "type": "IGNORE"
+    },
+    {
+      "classname": "okhttp3.CertificatePinner",
+      "methodname": "check",
+      "type": "MISC"
+    }
+  ]
+}

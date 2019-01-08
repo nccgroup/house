@@ -1,0 +1,188 @@
+<div class="container-fluid">
+    <ul class="nav nav-pills nav-justified">
+        <li class="nav active"><a data-toggle="tab" href="#FILEIO" onclick="clear_notification('FILEIO')"><i class="glyphicon glyphicon-file"></i> FILEIO <span class="badge badge-success" id="NOTI_FILEIO"></span></a></li>
+        <li class="nav"><a data-toggle="tab" href="#SHAREDPREFERENCES" onclick="clear_notification('SHAREDPREFERENCES')"><i class="glyphicon glyphicon-briefcase"></i> SHAREDPREFERENCES <span class="badge badge-success" id="NOTI_SHAREDPREFERENCES"></span></a></li>
+        <li class="nav"><a data-toggle="tab" href="#HTTP" onclick="clear_notification('HTTP')"><i class="glyphicon glyphicon glyphicon-earphone"></i> HTTP <span class="badge badge-success" id="NOTI_HTTP"></span></a></li>
+        <li class="nav"><a data-toggle="tab" href="#WEBVIEW" onclick="clear_notification('WEBVIEW')"><i class="glyphicon glyphicon glyphicon-globe"></i> WEBVIEW <span class="badge badge-success" id="NOTI_WEBVIEW"></span></a></li>
+        <li class="nav"><a data-toggle="tab" href="#IPC" onclick="clear_notification('IPC')"><i class="glyphicon glyphicon-link"></i> IPC <span class="badge badge-success" id="NOTI_IPC"></span></a></li>
+        <li class="nav"><a data-toggle="tab" href="#MISC" onclick="clear_notification('MISC')"><i class="glyphicon glyphicon-asterisk"></i> MISC <span class="badge badge-success" id="NOTI_MISC"></span></a></li>
+    </ul>
+    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#monitor_settings" data-toggle="tooltip" title="Monitor">
+        <i class="glyphicon glyphicon glyphicon-wrench"></i> Enable/Disable</a>
+    </button>
+    <button type="button" class="btn btn-default" onclick="clear_monitorMessage_All();" class="btn btn-default btn-xs">
+        <i class="glyphicon glyphicon-trash"></i> Clear All
+    </button>
+    <div class="onoffswitch3">
+        <input type="checkbox" name="onoffswitch3" class="onoffswitch3-checkbox" id="SWITCH_AUTOREFRESH" onclick="setMonitorRefresh()">
+        <label class="onoffswitch3-label" for="SWITCH_AUTOREFRESH">
+            <span class="onoffswitch3-inner">
+            <span class="onoffswitch3-active"><span class="onoffswitch3-switch">Refresh: On</span></span>
+            <span class="onoffswitch3-inactive"><span class="onoffswitch3-switch">Refresh: Off</span></span>
+            </span>
+        </label>
+    </div> 
+    <!-- <p class="text-danger" id="monitor_running" style="display:inline" align="right">Not Running</p> -->
+    <div class="pre-scrollable" style="min-height: 800px;">
+        <div class="tab-content">
+            <div class="tab-pane fade in active" role="tabpanel" id="FILEIO">
+                <button type="button" onclick="clear_monitorMessage('fileio');" class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-trash"></i> Clear
+                </button>
+                <table class="table table-striped table-bordered" id="fileiomonitorTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">MethodName</th>
+                            <th style="width: 60%">Args Dump</th>
+                            <th style="width: 20%">Return Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fileiomonitorBody"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" role="tabpanel" id="SHAREDPREFERENCES">
+                <button type="button" onclick="clear_monitorMessage('sharedpreferences');" class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-trash"></i> Clear
+                </button>
+                <table class="table table-striped table-bordered" id="sharedpreferencesmonitorTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">MethodName</th>
+                            <th style="width: 60%">Args Dump</th>
+                            <th style="width: 20%">Return Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sharedpreferencesmonitorBody"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" role="tabpanel" id="HTTP">
+                <button type="button" onclick="clear_monitorMessage('http');" class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-trash"></i> Clear
+                </button>
+                <table class="table table-striped table-bordered" id="httpmonitorTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">MethodName</th>
+                            <th style="width: 60%">Args Dump</th>
+                            <th style="width: 20%">Return Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="httpmonitorBody"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="WEBVIEW" action="">
+                <button type="button" onclick="clear_monitorMessage('webview');" class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-trash"></i> Clear
+                </button>
+                <table class="table table-striped table-bordered" id="webviewmonitorTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">MethodName</th>
+                            <th style="width: 60%">Args Dump</th>
+                            <th style="width: 20%">Return Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="webviewmonitorBody"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="IPC">
+                <button type="button" onclick="clear_monitorMessage('ipc');" class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-trash"></i> Clear
+                </button>
+                <table class="table table-striped table-bordered" id="ipcmonitorTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">MethodName</th>
+                            <th style="width: 60%">Args Dump</th>
+                            <th style="width: 20%">Return Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ipcmonitorBody"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="MISC">
+                <button type="button" onclick="clear_monitorMessage('misc');" class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-trash"></i> Clear
+                </button>
+                <table class="table table-striped table-bordered" id="miscmonitorTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">MethodName</th>
+                            <th style="width: 60%">Args Dump</th>
+                            <th style="width: 20%">Return Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="miscmonitorBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="monitor_settings" tabindex="-1" role="dialog" aria-labelledby="monitor_settingsLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Monitor</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="col-md-12">
+                            <form class="form-horizontal" role="form">
+                                <div class="row">
+                                    <div class="btn-group">
+                                        <label class="switch">
+                                            <input type="checkbox" id="SWITCH_FILEIO" checked>
+                                            <span class="slider"></span>
+                                        </label><small class="text-uppercase"><b> FILEIO</b></small>
+                                    </div>
+                                    <hr>
+                                    <div class="btn-group">
+                                        <label class="switch">
+                                            <input type="checkbox" id="SWITCH_SHAREDPREFERENCES" checked>
+                                            <span class="slider"></span>
+                                        </label><small class="text-uppercase"><b> SHAREDPREFERENCES</b></small>
+                                    </div>
+                                    <hr>
+                                    <div class="btn-group">
+                                        <label class="switch">
+                                            <input type="checkbox" id="SWITCH_HTTP" checked>
+                                            <span class="slider"></span>
+                                        </label><small class="text-uppercase"><b> HTTP</b></small>
+                                    </div>
+                                    <hr>
+                                    <div class="btn-group">
+                                        <label class="switch">
+                                            <input type="checkbox" id="SWITCH_WEBVIEW" checked>
+                                            <span class="slider"></span>
+                                        </label><small class="text-uppercase"><b> WEBVIEW</b></small>
+                                    </div>
+                                    <hr>
+                                    <div class="btn-group">
+                                        <label class="switch">
+                                            <input type="checkbox" id="SWITCH_IPC" checked>
+                                            <span class="slider"></span>
+                                        </label><small class="text-uppercase"><b> IPC</b></small>
+                                    </div>
+                                    <hr>
+                                    <div class="btn-group">
+                                        <label class="switch">
+                                            <input type="checkbox" id="SWITCH_MISC" checked>
+                                            <span class="slider"></span>
+                                        </label><small class="text-uppercase"><b> MISC</b></small>
+                                    </div>
+                                    <hr>
+                                </div>
+                            </form>
+                        </div>
+                        <hr>
+                        <button class="btn btn-success" data-dismiss="modal" onclick="loadMonitor();">Save & Run</button>
+                        <button class="btn btn-danger" data-dismiss="modal" onclick="unloadMonitor();">Disable Monitor</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

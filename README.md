@@ -36,7 +36,8 @@ By default, House binds to http://127.0.0.1:8000.
 To get an overview of House capabilities, you can visit [user's manual](https://github.com/nccgroup/house/wiki/Overview) for details.
 
 ## News
-House now runs on **python3**, as python2 will retire in 2018.
+- House now runs on **python3**, as python2 will retire in 2019.
+- Added Monitor tab, inspired by [Inspeckage](https://github.com/ac-pm/Inspeckage).
 
 
 ## Example Usage

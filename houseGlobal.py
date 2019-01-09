@@ -35,12 +35,14 @@ class houseGlobal:
 		self.packagename = ""        # can have up to 1 package for each session
 		self.script_to_load = ''
 		self.script = None
-		self.stetho_script = None
-		self.monitor_script = None
+		self.stetho_script_object = None
+		self.monitor_script_object = None
+		self.preload_script_object = None
 		self.enum_script_to_load = ''
 		self.hook_script = ''
 		self.intercept_script = ''
 		self.monitor_script = ''
+		self.preload_script = ''
 		self.enum_class = ''
 		self.enum_class_pattern = ''
 		self.enum_option = ''
@@ -75,6 +77,7 @@ class houseGlobal:
 							  "SWITCH_SHAREDPREFERENCES": 1
 							}
 		self.monitor_refresh = 0
+		self.preload_conf = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0}
 		
 
 house_global = houseGlobal()

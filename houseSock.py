@@ -324,11 +324,23 @@ def doEnv():
 
 @socketio.on('loadStetho', namespace='/eventBus')
 def doLoadStetho():
+
     try:
-        preload_script()
+        preload_stetho_script()
     except Exception as e:
         # IPython.embed()
-        emit('sideload_stetho_error',{'error': cgi.escape("[!]preload_script Exception: {}".format(str(e)))})
+        emit('sideload_stetho_error',{'error': cgi.escape("[!]preload_stetho_script Exception: {}".format(str(e)))})
+
+@socketio.on('runpreload', namespace='/eventBus')
+def runpreload(preload_message):
+    house_global.preload_conf = preload_message.get('preload_settings')
+    update_conf()
+    try:
+        run_preload_script()
+    except Exception as e:
+        # IPython.embed()
+        emit('runpreload',{'error': cgi.escape("[!]preload_script Exception: {}".format(str(e)))})
+
 
 @socketio.on('loadMonitor', namespace='/eventBus')
 def doloadMonitor(monitor_message):
@@ -340,6 +352,19 @@ def doloadMonitor(monitor_message):
     except Exception as e:
         # IPython.embed()
         emit('doloadMonitor',{'error': cgi.escape("[!]doloadMonitor Exception: {}".format(str(e)))})
+
+
+@socketio.on('endpreload', namespace='/eventBus')
+def endpreload():
+    house_global.preload_conf = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 1}
+    update_conf()
+    try:
+        unload_script("preload")
+        # check_monitor_running()
+    except Exception as e:
+        # IPython.embed()
+        emit('endpreload',{'error': cgi.escape("[!]endpreload Exception: {}".format(str(e)))})
+
 
 @socketio.on('unloadMonitor', namespace='/eventBus')
 def dounloadMonitor():

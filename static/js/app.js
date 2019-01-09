@@ -6,6 +6,7 @@ var tmp = null
 var save_script_data = null
 var monitor_messages = {"IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": [], "SQL": []}
 var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_SQL': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1}
+var preload_settings = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0}
 var monitor_refresh = false;
 
 function refresh_device() {
@@ -26,6 +27,12 @@ function doEnv() {
 
 function sideloadStetho() {
     socket.emit("loadStetho")
+}
+
+function runpreload(){
+    preload_settings['PRELOAD_STETHO'] = document.getElementById("PRELOAD_STETHO").checked ? 1 : 0
+    preload_settings['PRELOAD_SSLSTRIP'] = document.getElementById("PRELOAD_SSLSTRIP").checked ? 1 : 0
+    socket.emit("runpreload", {preload_settings : preload_settings})
 }
 
 function loadMonitor() {
@@ -60,10 +67,22 @@ function uncheckAll() {
     document.getElementById("SWITCH_MISC").checked = false
 }
 
+function uncheckpreload() {
+    document.getElementById("PRELOAD_STETHO").checked = false
+    document.getElementById("PRELOAD_SSLSTRIP").checked = false
+}
+
+
 function unloadMonitor() {
     uncheckAll()
     socket.emit("unloadMonitor")
 }
+
+function endpreload() {
+    uncheckpreload()
+    socket.emit("endpreload")
+}
+
 
 function unloadStetho() {
     socket.emit("unloadStetho")
@@ -402,6 +421,21 @@ window.onload = function() {
         })
     }
 
+    function getPreloadConfig() {
+        $.get('http://' + location.host + '/preload_conf', (data) => {
+            if (data == "") {
+                console.log("Retrying to get preload_conf...")
+                setTimeout(getHookConfig, 1000);
+            }
+            preload_settings = JSON.parse(data)
+            // console.log(monitor_settings)
+            uncheckpreload()
+            document.getElementById("PRELOAD_STETHO").checked = (preload_settings.PRELOAD_STETHO == 1) ? true : false
+            document.getElementById("PRELOAD_SSLSTRIP").checked = (preload_settings.PRELOAD_SSLSTRIP == 1) ? true : false
+            
+        })
+    }
+
     function postClassEnum(class_to_find) {
         console.log(class_to_find)
         $.post('http://' + location.host + '/setEnumConfig', class_to_find)
@@ -501,6 +535,7 @@ window.onload = function() {
         getHookConfig()
         getHookScript()
         getMonitorConfig()
+        getPreloadConfig()
     }
 
 

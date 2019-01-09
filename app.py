@@ -65,6 +65,11 @@ def hook_config():
 def monitor_config():
     return json.dumps(house_global.monitor_conf)
 
+@app.route('/preload_conf', methods=['GET'])
+def preload_config():
+    return json.dumps(house_global.preload_conf)
+
+
 # For debugging purpose
 @app.route('/script', methods=['GET'])
 def getDaScript():

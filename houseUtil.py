@@ -125,6 +125,8 @@ def update_conf():
 
     with open('./config/monitor_conf.json','w') as f:
         f.write(json.dumps(house_global.monitor_conf))
+    with open('./config/preload_conf.json','w') as f:
+        f.write(json.dumps(house_global.preload_conf))
 
 def init_settings():
     try:
@@ -146,6 +148,9 @@ def cache_script(option, script):
             f.write(script)
     elif option == "monitor_cache":
         with open('./cache/current/monitor_script.js','w') as f:
+            f.write(script)
+    elif option == "preload_cache":
+        with open('./cache/current/preload_script.js','w') as f:
             f.write(script)
     else:
         print (stylize("[!] Invalid cache script type", Error))
@@ -565,16 +570,8 @@ def build_enum_script(option, class_to_find, class_pattern):
     result = render('./scripts/enum/enum_skl.js',context)
     house_global.enum_script_to_load = result
 
-def preload_script_archive():
-    getDevice()
-    with open('./scripts/misc/sideload_stetho.js') as sideload:
-        jscode = sideload.read()
-    process = house_global.device.attach(house_global.packagename)
-    script = process.create_script(jscode)
-    print('[*] Running Stetho')
-    script.load()
 
-def preload_script():
+def preload_stetho_script():
     global Info
     getDevice()
     if ((house_global.packagename != '') & (house_global.device != None)):
@@ -592,10 +589,10 @@ def preload_script():
             else:
                 jscode = render('./scripts/misc/sideload_stetho.js',{"application_name":get_application_name()})
                 process = house_global.device.attach(house_global.packagename)
-                house_global.stetho_script = process.create_script(jscode)
+                house_global.stetho_script_object = process.create_script(jscode)
                 print('[*] Running Stetho')
 
-                house_global.stetho_script.load()
+                house_global.stetho_script_object.load()
 
                 print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
@@ -604,6 +601,53 @@ def preload_script():
                     house_global.device.resume(pid)
         except Exception as e:
             print (stylize("[!]sideload_script Exception: {}".format(str(e)), Error))
+            traceback.print_exc(file=sys.stdout)
+            raise e
+        
+    else:
+        print (stylize('[!]Please tell me what you want!', Error))
+        raise Exception(" Failed to load script")
+
+def run_preload_script():
+    global Info
+    getDevice()
+    if ((house_global.packagename != '') & (house_global.device != None)):
+        # IPython.embed()
+        unload_script("preload")
+        preload_context = {
+            "application_name": "",
+            "PRELOAD_STETHO": "",
+            "PRELOAD_SSLSTRIP": ""
+        }
+        if (house_global.preload_conf.get('PRELOAD_STETHO') == 1):preload_context['PRELOAD_STETHO'] = 'yes'
+        if (house_global.preload_conf.get('PRELOAD_SSLSTRIP') == 1):preload_context['PRELOAD_SSLSTRIP'] = 'yes'
+        try:
+            print (stylize("[!] Have to reload to preload, trying to spawn it..", MightBeImportant))
+            pid = house_global.device.spawn([house_global.packagename])
+            house_global.session = house_global.device.attach(pid)
+            pending = True
+
+            if get_application_name() == None:
+                print (stylize("[!] What is the application name? Try refresh House", Error))
+                return
+            else:
+                preload_context['application_name'] = get_application_name()
+                house_global.preload_script = render('./scripts/misc/preload.js',preload_context)
+                print(preload_context)
+                cache_script("preload_cache", house_global.preload_script)
+                process = house_global.device.attach(house_global.packagename)
+                house_global.preload_script_object = process.create_script(house_global.preload_script)
+                print('[*] Running Preload')
+
+                house_global.preload_script_object.load()
+
+                print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+
+                if pending: 
+                    # IPython.embed()
+                    house_global.device.resume(pid)
+        except Exception as e:
+            print (stylize("[!]run_preload_script Exception: {}".format(str(e)), Error))
             traceback.print_exc(file=sys.stdout)
             raise e
         
@@ -673,12 +717,12 @@ def loadMonitor():
                 house_global.session = house_global.device.attach(pid)
                 pending = True
 
-            house_global.monitor_script = house_global.session.create_script(house_global.monitor_script)
+            house_global.monitor_script_object = house_global.session.create_script(house_global.monitor_script)
             # print house_global.monitor_script
             # IPython.embed()
             
-            house_global.monitor_script.on('message',onMonitorMessage)
-            house_global.monitor_script.load()
+            house_global.monitor_script_object.on('message',onMonitorMessage)
+            house_global.monitor_script_object.load()
             print (stylize('[+] Loading the monitor script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
             if pending: 
@@ -699,14 +743,16 @@ def quitRepl():
 
 def unload_script(type = "main"):
     if(house_global.session):
-        print (stylize('[-] Unload the script..', Info))
-
+        
         try:
+            print (stylize('[-] Unload the ' + type + ' script..', Info))
             if type == "stetho":
-                house_global.stetho_script.unload()
+                house_global.stetho_script_object.unload()
             elif type == "monitor":
                 # IPython.embed()
-                house_global.monitor_script.unload()
+                house_global.monitor_script_object.unload()
+            elif type == "preload":
+                house_global.preload_script_object.unload()
             else:
                 quitRepl()
                 house_global.script.unload()

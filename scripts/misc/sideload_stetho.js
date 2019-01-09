@@ -61,6 +61,6 @@ Java.perform(function() {
 
         };
     } catch (err) {
-        console.log("Caught Monitor exception: [File_hook.$init] => " + err);
+        console.log("Caught loadStetho exception: => " + err);
     }
 });

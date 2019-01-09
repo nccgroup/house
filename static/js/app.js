@@ -97,6 +97,7 @@ function get_intercept_history() {
 
 function changePackage(packagename) {
     var pkg = { packagename: packagename }
+    $("#env_result").html("Waiting for device & package...")
     socket.emit("setPackage", pkg)
 }
 

@@ -260,7 +260,7 @@ def onMonitorMessage(message,data):
         retval = cgi.escape(retval).replace(linebreak,'<br>')
     monitor_entry = {"methodname":method,"args":args,"retval":retval}
 
-    # "types" : ["fileIO", "HTTP", "WEBVIEW", "IPC", "MISC", "IGNORE"]
+    # "types" : ["fileIO", "HTTP", "WEBVIEW", "SQL", "IPC", "MISC", "IGNORE"]
     if (mon_type != None) & (mon_type != "IGNORE"):
         if mon_type == "fileIO":
             house_global.monitor_message['FILEIO'].insert(0,monitor_entry)
@@ -270,6 +270,8 @@ def onMonitorMessage(message,data):
             house_global.monitor_message['HTTP'].insert(0,monitor_entry)
         elif mon_type == "WEBVIEW":
             house_global.monitor_message['WEBVIEW'].insert(0,monitor_entry)
+        elif mon_type == "SQL":
+            house_global.monitor_message['SQL'].insert(0,monitor_entry)
         elif mon_type == "IPC":
             house_global.monitor_message['IPC'].insert(0,monitor_entry)
         else: # misc
@@ -524,9 +526,9 @@ def build_hook_script():
     cache_script("hooks_cache", house_global.hook_script)
 
 def build_monitor_script():
-    with open("./scripts/monitor/monitor_hook.json") as monitor_conf:
-        monitor_conf_rd = monitor_conf.read()
-    monitor_list = json.loads(monitor_conf_rd)
+    with open("./scripts/monitor/monitor_hook.json") as monitor_list_conf:
+        monitor_list_conf_rd = monitor_list_conf.read()
+    monitor_list = json.loads(monitor_list_conf_rd)
     file_monitor_list = monitor_list.get("monitor_list")
     render_monitor_list = []
 

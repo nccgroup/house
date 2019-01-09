@@ -343,7 +343,7 @@ def doloadMonitor(monitor_message):
 
 @socketio.on('unloadMonitor', namespace='/eventBus')
 def dounloadMonitor():
-    house_global.monitor_conf = {"SWITCH_FILEIO": 0, "SWITCH_HTTP": 0, "SWITCH_MISC": 0, "SWITCH_WEBVIEW": 0, "SWITCH_IPC": 0}
+    house_global.monitor_conf = {"SWITCH_FILEIO": 0, "SWITCH_HTTP": 0, "SWITCH_MISC": 0, "SWITCH_WEBVIEW": 0, "SWITCH_SQL": 0, "SWITCH_IPC": 0}
     update_conf()
     try:
         unload_script("monitor")

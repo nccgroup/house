@@ -3,6 +3,7 @@
     "fileIO",
     "http",
     "webview",
+    "sql",
     "ipc",
     "misc",
     "sharedpreferences",
@@ -134,6 +135,41 @@
       "classname": "android.webkit.WebView",
       "methodname": "evaluateJavascript",
       "type": "WEBVIEW"
+    },
+    {
+      "classname": "android.database.sqlite.SQLiteDatabase",
+      "methodname": "execSQL",
+      "type": "SQL"
+    },
+    {
+      "classname": "android.database.sqlite.SQLiteDatabase",
+      "methodname": "update",
+      "type": "SQL"
+    },
+    {
+      "classname": "android.database.sqlite.SQLiteDatabase",
+      "methodname": "insert",
+      "type": "SQL"
+    },
+    {
+      "classname": "android.database.sqlite.SQLiteDatabase",
+      "methodname": "query",
+      "type": "SQL"
+    },
+    {
+      "classname": "net.sqlcipher.database.SQLiteDatabase",
+      "methodname": "execSQL",
+      "type": "SQL"
+    },
+    {
+      "classname": "net.sqlcipher.database.SQLiteDatabase",
+      "methodname": "openOrCreateDatabase",
+      "type": "SQL"
+    },
+    {
+      "classname": "net.sqlcipher.database.SQLiteDatabase",
+      "methodname": "rawQuery",
+      "type": "SQL"
     },
     {
       "classname": "android.content.ContextWrapper",

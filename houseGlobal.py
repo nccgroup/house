@@ -47,7 +47,7 @@ class houseGlobal:
 		self.onMessageException = ''
 		self.html_output = ""
 		self.messages = []
-		self.monitor_message = {"FILEIO":[], "IPC": [], "WEBVIEW":[], "HTTP":[], "MISC":[], "SHAREDPREFERENCES": []}
+		self.monitor_message = {"FILEIO":[], "IPC": [], "WEBVIEW":[],"SQL":[], "HTTP":[], "MISC":[], "SHAREDPREFERENCES": []}
 		self.monitor_queue = set()
 		self.new_hookmsg = False
 		self.enum_messages = []
@@ -69,6 +69,7 @@ class houseGlobal:
 							  "SWITCH_FILEIO": 1,
 							  "SWITCH_HTTP": 1,
 							  "SWITCH_WEBVIEW": 1,
+							  "SWITCH_SQL": 1,
 							  "SWITCH_IPC": 1,
 							  "SWITCH_MISC": 1,
 							  "SWITCH_SHAREDPREFERENCES": 1

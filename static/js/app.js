@@ -4,8 +4,8 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + house
 var device = null
 var tmp = null
 var save_script_data = null
-var monitor_messages = {"IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": []}
-var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1}
+var monitor_messages = {"IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": [], "SQL": []}
+var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_SQL': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1}
 var monitor_refresh = false;
 
 function refresh_device() {
@@ -33,6 +33,7 @@ function loadMonitor() {
     monitor_settings['SWITCH_SHAREDPREFERENCES'] = document.getElementById("SWITCH_SHAREDPREFERENCES").checked ? 1 : 0
     monitor_settings['SWITCH_HTTP'] = document.getElementById("SWITCH_HTTP").checked ? 1 : 0
     monitor_settings['SWITCH_WEBVIEW'] = document.getElementById("SWITCH_WEBVIEW").checked ? 1 : 0
+    monitor_settings['SWITCH_SQL'] = document.getElementById("SWITCH_SQL").checked ? 1 : 0
     monitor_settings['SWITCH_IPC'] = document.getElementById("SWITCH_IPC").checked ? 1 : 0
     monitor_settings['SWITCH_MISC'] = document.getElementById("SWITCH_MISC").checked ? 1 : 0
     // console.log(monitor_settings)
@@ -54,6 +55,7 @@ function uncheckAll() {
     document.getElementById("SWITCH_SHAREDPREFERENCES").checked = false
     document.getElementById("SWITCH_HTTP").checked = false
     document.getElementById("SWITCH_WEBVIEW").checked = false
+    document.getElementById("SWITCH_SQL").checked = false
     document.getElementById("SWITCH_IPC").checked = false
     document.getElementById("SWITCH_MISC").checked = false
 }
@@ -196,6 +198,7 @@ function clear_monitorUI(){
     $("#" + "sharedpreferences" + 'monitorBody').empty();
     $("#" + "http" + 'monitorBody').empty();
     $("#" + "webview" + 'monitorBody').empty();
+    $("#" + "sql" + 'monitorBody').empty();
     $("#" + "ipc" + 'monitorBody').empty();
     $("#" + "misc" + 'monitorBody').empty();
 }
@@ -205,6 +208,7 @@ function clear_monitorMessage_All() {
     clear_monitorMessage('sharedpreferences');
     clear_monitorMessage('http');
     clear_monitorMessage('webview');
+    clear_monitorMessage('sql');
     clear_monitorMessage('ipc');
     clear_monitorMessage('misc');
 
@@ -212,6 +216,7 @@ function clear_monitorMessage_All() {
     $('#NOTI_SHAREDPREFERENCES').text("");
     $('#NOTI_HTTP').text("");
     $('#NOTI_WEBVIEW').text("");
+    $('#NOTI_SQL').text("");
     $('#NOTI_IPC').text("");
     $('#NOTI_MISC').text("");
 }
@@ -271,6 +276,7 @@ window.onload = function() {
             MISC_message = data['MISC']
             IPC_message = data['IPC']
             WEBVIEW_message = data['WEBVIEW']
+            SQL_message = data['SQL']
 
             if (data.exception != null) {
                 push_err_msg(data.exception);
@@ -284,6 +290,7 @@ window.onload = function() {
                 MISC_message.forEach(addMonitorMessages, { type: "MISC" });
                 IPC_message.forEach(addMonitorMessages, { type: "IPC" });
                 WEBVIEW_message.forEach(addMonitorMessages, { type: "WEBVIEW" });
+                SQL_message.forEach(addMonitorMessages, { type: "SQL" });
             }
         })
     }
@@ -300,6 +307,7 @@ window.onload = function() {
         MISC_message = data['MISC']
         IPC_message = data['IPC']
         WEBVIEW_message = data['WEBVIEW']
+        SQL_message = data['SQL']
 
         if (data.exception != null) {
             push_err_msg(data.exception);
@@ -312,6 +320,7 @@ window.onload = function() {
             MISC_message.forEach(addMonitorMessages, { type: "MISC" });
             IPC_message.forEach(addMonitorMessages, { type: "IPC" });
             WEBVIEW_message.forEach(addMonitorMessages, { type: "WEBVIEW" });
+            SQL_message.forEach(addMonitorMessages, { type: "SQL" });
         }
     }
 
@@ -386,6 +395,7 @@ window.onload = function() {
             document.getElementById("SWITCH_SHAREDPREFERENCES").checked = (monitor_settings.SWITCH_SHAREDPREFERENCES == 1) ? true : false
             document.getElementById("SWITCH_HTTP").checked = (monitor_settings.SWITCH_HTTP == 1) ? true : false
             document.getElementById("SWITCH_WEBVIEW").checked = (monitor_settings.SWITCH_WEBVIEW == 1) ? true : false
+            document.getElementById("SWITCH_SQL").checked = (monitor_settings.SWITCH_SQL == 1) ? true : false
             document.getElementById("SWITCH_IPC").checked = (monitor_settings.SWITCH_IPC == 1) ? true : false
             document.getElementById("SWITCH_MISC").checked = (monitor_settings.SWITCH_MISC == 1) ? true : false
         })
@@ -471,6 +481,9 @@ window.onload = function() {
                     break;
                 case 'WEBVIEW':
                     $('#webviewmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
+                    break;
+                 case 'SQL':
+                    $('#sqlmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
                     break;
                 default:
                     $('#miscmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');

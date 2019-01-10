@@ -4,9 +4,9 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + house
 var device = null
 var tmp = null
 var save_script_data = null
-var monitor_messages = {"IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": [], "SQL": []}
-var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_SQL': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1}
-var preload_settings = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0}
+var monitor_messages = { "IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": [], "SQL": [] }
+var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_SQL': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1 }
+var preload_settings = { "PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0 }
 var monitor_refresh = false;
 
 function refresh_device() {
@@ -29,10 +29,10 @@ function sideloadStetho() {
     socket.emit("loadStetho")
 }
 
-function runpreload(){
+function runpreload() {
     preload_settings['PRELOAD_STETHO'] = document.getElementById("PRELOAD_STETHO").checked ? 1 : 0
     preload_settings['PRELOAD_SSLSTRIP'] = document.getElementById("PRELOAD_SSLSTRIP").checked ? 1 : 0
-    socket.emit("runpreload", {preload_settings : preload_settings})
+    socket.emit("runpreload", { preload_settings: preload_settings })
 }
 
 function loadMonitor() {
@@ -47,14 +47,14 @@ function loadMonitor() {
     socket.emit("loadMonitor", { monitor_settings: monitor_settings })
 }
 
-function setMonitorRefresh(){
+function setMonitorRefresh() {
     monitor_refresh = document.getElementById("SWITCH_AUTOREFRESH").checked;
-    if(monitor_refresh){
+    if (monitor_refresh) {
         socket.emit("enableAutoRefresh")
-    }else{
+    } else {
         socket.emit("diableAutoRefresh")
     }
-    
+
 }
 
 function uncheckAll() {
@@ -213,7 +213,7 @@ function clear_monitorMessage(type) {
 
 }
 
-function clear_monitorUI(){
+function clear_monitorUI() {
     $("#" + "fileio" + 'monitorBody').empty();
     $("#" + "sharedpreferences" + 'monitorBody').empty();
     $("#" + "http" + 'monitorBody').empty();
@@ -432,7 +432,7 @@ window.onload = function() {
             uncheckpreload()
             document.getElementById("PRELOAD_STETHO").checked = (preload_settings.PRELOAD_STETHO == 1) ? true : false
             document.getElementById("PRELOAD_SSLSTRIP").checked = (preload_settings.PRELOAD_SSLSTRIP == 1) ? true : false
-            
+
         })
     }
 
@@ -517,7 +517,7 @@ window.onload = function() {
                 case 'WEBVIEW':
                     $('#webviewmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
                     break;
-                 case 'SQL':
+                case 'SQL':
                     $('#sqlmonitorTable > tbody:last').append('<tr><td>' + methodname + '</td><td><code>' + args + '</code></td><td>' + retval + '</td>');
                     break;
                 default:
@@ -564,8 +564,8 @@ window.onload = function() {
             document.getElementById("SWITCH_AUTOREFRESH").checked = monitor_refresh ? true : false
         })
 
-        setInterval(()=>{
-            if(monitor_refresh){
+        setInterval(() => {
+            if (monitor_refresh) {
                 socket.emit("get_monitor_message");
             }
         }, 1500)
@@ -674,12 +674,16 @@ window.onload = function() {
 
         socket.on('update_monitor_message', function(msg) {
             // $('#NOTI_' + msg.mon_type).text("New");
-            for (i in msg.monitor_new){
-                if (msg.monitor_new[i] == null){break;}
-                else{$('#NOTI_' + msg.monitor_new[i]).text("New");}
+            // console.log(msg.monitor_new.length)
+            if (msg.monitor_new.length != 0) {
+                // lazy refreshing
+                for (i in msg.monitor_new) {
+                    if (msg.monitor_new[i] == null) { break; } else { $('#NOTI_' + msg.monitor_new[i]).text("New"); }
+                }
+                monitor_messages = msg.monitor_message;
+                renderMonitorMessages(monitor_messages)
             }
-            monitor_messages = msg.monitor_message;
-            renderMonitorMessages(monitor_messages)
+
             // getMonitorMessages()
         });
 

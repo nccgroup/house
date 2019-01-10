@@ -314,8 +314,9 @@ def doLoadEnum(message):
 
 @socketio.on('doEnv', namespace='/eventBus')
 def doEnv():
-    with open('./scripts/enum/env.js') as f:
-        house_global.script_to_load = f.read()
+    # with open('./scripts/enum/env.js') as f:
+    #     house_global.script_to_load = f.read()
+    house_global.script_to_load = build_env_script()
     try:
         load_script()
     except Exception as e:

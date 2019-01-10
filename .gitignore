@@ -6,3 +6,4 @@ Pipfile.lock
 cache/
 config/
 *.bak
+*.bak.js

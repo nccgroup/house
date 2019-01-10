@@ -140,6 +140,9 @@ def cache_script(option, script):
     if option == "enum_cache":
         with open('./cache/current/enum_script.js','w') as f:
             f.write(script)
+    elif option == "env_cache":
+        with open('./cache/current/env_script.js','w') as f:
+            f.write(script)
     elif option == "hooks_cache":
         with open('./cache/current/hook_script.js','w') as f:
             f.write(script)
@@ -529,6 +532,14 @@ def build_hook_script():
     house_global.hook_script = result
 
     cache_script("hooks_cache", house_global.hook_script)
+
+def build_env_script():
+    print(stylize("[+]Building env script for " + house_global.packagename + " .. ", Info))
+    result = ''
+    if house_global.packagename != None:
+        result = render('./scripts/enum/env.js', {'packageName': house_global.packagename})
+    cache_script("env_cache", result)
+    return result
 
 def build_monitor_script():
     with open("./scripts/monitor/monitor_hook.json") as monitor_list_conf:

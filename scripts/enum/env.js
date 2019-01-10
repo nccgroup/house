@@ -1,14 +1,19 @@
 var context = null
 var env_signature = "t3llm3mor3ab0ut1t"
+var applicationName = null
 
 Java.perform(function() {
     console.log("In da house..getting env..")
     var ActivityThread = Java.use('android.app.ActivityThread');
-
+    var Application = Java.use('android.app.Application')
     var app = ActivityThread.currentApplication();
     // Inspired by https://github.com/sensepost/objection
-    if (app != null){
+    if (app != null) {
         context = app.getApplicationContext();
+        var launchIntent = context.getPackageManager().getLaunchIntentForPackage("{{packageName}}");
+        // var app_classname = launchIntent.getComponent().getClassName();
+        // This may necessarity return the correct class name; if not; change this yourself after decompiling the apk
+        var app_classname = app.getClass().toString().split(' ')[1];
         var data = {
             filesDirectory: context.getFilesDir().getAbsolutePath().toString(),
             cacheDirectory: context.getCacheDir().getAbsolutePath().toString(),
@@ -16,13 +21,13 @@ Java.perform(function() {
             codeCacheDirectory: 'getCodeCacheDir' in context ? context.getCodeCacheDir().getAbsolutePath().toString() : 'N/A',
             obbDir: context.getObbDir().getAbsolutePath().toString(),
             packageCodePath: context.getPackageCodePath().toString(),
-            applicationName: String(context).split('@')[0]
+            applicationName: app_classname
+            // applicationName: String(context).split('@')[0]
         };
 
         send(env_signature + JSON.stringify(data))
-    }else{
+    } else {
         console.log("Hooked too early, no context yet!")
     }
-    
-});
 
+});

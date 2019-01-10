@@ -49,7 +49,7 @@ function loadStetho() {
 }
 
 function sslstrip() {
-    
+    // credit: https://codeshare.frida.re/@masbog/frida-android-unpinning-ssl/
     Java.perform(function() {
         console.log("[.] Android Cert Pinning Bypass");
 
@@ -79,59 +79,45 @@ function sslstrip() {
             console.log("[-] TrustManagerImpl Not Found");
         }
 
+        //if (is_android_n === 0) {
+        //--------
         console.log("[.] TrustManager Android < 7 detection...");
-        // credit: https://codeshare.frida.re/@pcipolloni/universal-android-ssl-pinning-bypass-with-frida/
-        console.log("[+] Loading our CA...")
-        cf = CertificateFactory.getInstance("X.509");
-        
+        // Implement a new TrustManager
+        // ref: https://gist.github.com/oleavr/3ca67a173ff7d207c6b8c3b0ca65a9d8
+        var TrustManager = Java.registerClass({
+            name: 'com.house.TrustManager',
+            implements: [X509TrustManager],
+            methods: {
+                checkClientTrusted: function(chain, authType) {},
+                checkServerTrusted: function(chain, authType) {},
+                getAcceptedIssuers: function() {
+                    return [];
+                }
+            }
+        });
+
+        // Prepare the TrustManagers array to pass to SSLContext.init()
+        var TrustManagers = [TrustManager.$new()];
+
+        // Get a handle on the init() on the SSLContext class
+        var SSLContext_init = SSLContext.init.overload(
+            '[Ljavax.net.ssl.KeyManager;', '[Ljavax.net.ssl.TrustManager;', 'java.security.SecureRandom');
+
         try {
-            var fileInputStream = FileInputStream.$new("/data/local/tmp/cert-der.crt");
-        }
-        catch(err) {
-            console.log("[o] " + err);
-        }
-
-        bufferedInputStream = BufferedInputStream.$new(fileInputStream);
-        var ca = cf.generateCertificate(bufferedInputStream);
-        bufferedInputStream.close();
-
-        var certInfo = Java.cast(ca, X509Certificate);
-        console.log("[o] Our CA Info: " + certInfo.getSubjectDN());
-
-        // Create a KeyStore containing our trusted CAs
-        console.log("[+] Creating a KeyStore for our CA...");
-        var keyStoreType = KeyStore.getDefaultType();
-        var keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(null, null);
-        keyStore.setCertificateEntry("ca", ca);
-        
-        // Create a TrustManager that trusts the CAs in our KeyStore
-        console.log("[+] Creating a TrustManager that trusts the CA in our KeyStore...");
-        var tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-        var tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-        tmf.init(keyStore);
-        console.log("[+] Our TrustManager is ready...");
-
-        console.log("[+] Hijacking SSLContext methods now...")
-        console.log("[-] Waiting for the app to invoke SSLContext.init()...")
-
-        try{
-            SSLContext.init.overload("[Ljavax.net.ssl.KeyManager;", "[Ljavax.net.ssl.TrustManager;", "java.security.SecureRandom").implementation = function(a,b,c) {
-            console.log("[o] App invoked javax.net.ssl.SSLContext.init...");
-            SSLContext.init.overload("[Ljavax.net.ssl.KeyManager;", "[Ljavax.net.ssl.TrustManager;", "java.security.SecureRandom").call(this, a, tmf.getTrustManagers(), c);
-            console.log("[+] SSLContext initialized with our custom TrustManager!");
-        }
-        }catch (err) {
+            // Override the init method, specifying our new TrustManager
+            SSLContext_init.implementation = function(keyManager, trustManager, secureRandom) {
+                console.log("[+] Overriding SSLContext.init() with the custom TrustManager android < 7");
+                SSLContext_init.call(this, keyManager, TrustManagers, secureRandom);
+            };
+        } catch (err) {
             console.log("[-] TrustManager Not Found");
         }
-       
+        //}
 
         //-------
         // OkHTTP v3.x
         // Wrap the logic in a try/catch as not all applications will have
         // okhttp as part of the app.
-
-        // credit: https://codeshare.frida.re/@masbog/frida-android-unpinning-ssl/
         try {
             var CertificatePinner = Java.use('okhttp3.CertificatePinner');
             console.log("[+] OkHTTP 3.x Found");

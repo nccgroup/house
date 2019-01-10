@@ -9,6 +9,8 @@
     <p>
         Stetho is a
         <a href="http://facebook.github.io/stetho/" target="_blank">debug bridge for Android applications</a> that I find it to be very useful, House can sideload stethor.jar and inject it into your application for debug purpose. It will only be turned on if you click the button below.
+        <br /><br />
+        <b>Use with caution:</b> It is experimental for now as Stetho requires <code>android.support.v4</code> support, disable Stetho if the app crashes with <code>"java.lang.ClassNotFoundException"</code>.
     </p>
     <h4>Here is what you need to do to make it work:</h4>
     <ul class="list-unstyled">
@@ -25,6 +27,13 @@
     <p>
         Toggle the button on the right-hand side to preload SSL Unpinning frida script. 
     </p>
+    <h4>Here is what you need to do to make it work:</h4>
+    <ul class="list-unstyled">
+        <li>1. Export your proxy certification, e.g. burpca-cert-der.crt
+        <li>2. Save the cert on the device as: <code>/data/local/tmp/cert-der.crt</code>;<br>
+        E.g. <code>adb push burpca-cert-der.crt /data/local/tmp/cert-der.crt</code>.</li>
+        
+    </ul>
 
 </div>
 <div class="col-md-5">

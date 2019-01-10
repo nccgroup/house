@@ -5,4 +5,4 @@ Pipfile.lock
 .DS_Store?
 cache/
 config/
-README.bak
+*.bak

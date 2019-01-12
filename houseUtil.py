@@ -41,6 +41,9 @@ def init_conf():
     if not (os.path.isfile("./config/env_conf.json")):
         with open("./config/env_conf.json",'w') as f:
             f.write('{"filesDirectory": "", "cacheDirectory": "", "externalCacheDirectory": "", "codeCacheDirectory": "", "packageCodePath": ""}')
+    if not (os.path.isfile("./config/monitor_conf.json")):
+        with open("./config/monitor_conf.json",'w') as f:
+            f.write('{"SWITCH_FILEIO": 0, "SWITCH_HTTP": 0, "SWITCH_MISC": 0, "SWITCH_WEBVIEW": 0, "SWITCH_SQL": 0, "SWITCH_IPC": 0}')
 
 def init_cache():
     if not (os.path.exists('cache/hook')):

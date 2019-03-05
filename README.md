@@ -26,8 +26,8 @@ python app.py <PORT>
 
 # or:
 mkvirtualenv --python=/usr/local/bin/python3 house
-pip install -r requirements.txt
 workon house
+pip install -r requirements.txt
 python app.py <PORT>
 ~~~
 By default, House binds to http://127.0.0.1:8000.

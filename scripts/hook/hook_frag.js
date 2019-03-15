@@ -18,8 +18,23 @@
 	    	var ret_type = String({{clazz_hook}}_{{ method_hook }}.returnType['className'])
 
 	        for (var index = 0; index < arguments.length; index++) {
-	        	arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
-	        	arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)
+						try {
+							var argTemp = arguments[index];
+							if (argTemp === undefined) {
+								throw "arg Undefined";
+							}
+							if (typeof(argTemp) != 'object' ) {
+								throw "arg is not object";
+							}
+							//console.log(typeof(argTemp) + ' : ' + argTemp );
+							var className = Java.cast(argTemp.getClass(), Java.use("java.lang.Class")).getName();
+							arg_type += ('argType' + index.toString() + " (" + className + ") : " + String(typeof(arguments[index])) + ' ')
+							arg_dump += ("arg" + index.toString() + " (" + className + ") : " + String(arguments[index]) + linebreak)
+						} catch(err) {
+							//console.log(err);
+							arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
+							arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)
+						}
 	        }
 	        method_info += "Reverse Call Stack: " + linebreak + getCaller() + linebreak + linebreak + {{clazz_hook}}_{{ method_hook }}.methodName + '( ' + arg_type+ ') '
 	        // var retval = eval('this.{{ method_name }}.apply(this, arguments)')
@@ -49,8 +64,23 @@
 		    	var arg_type = ''
 		    	var ret_type = String({{clazz_hook}}_{{ method_hook }}.returnType['className'])
 		        for (var index = 0; index < arguments.length; index++) {
-		        	arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
-		        	arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)
+							try {
+								var argTemp = arguments[index];
+								if (argTemp === undefined) {
+									throw "arg Undefined";
+								}
+								if (typeof(argTemp) != 'object' ) {
+									throw "arg is not object";
+								}
+								//console.log(typeof(argTemp) + ' : ' + argTemp );
+								var className = Java.cast(argTemp.getClass(), Java.use("java.lang.Class")).getName();
+								arg_type += ('argType' + index.toString() + " (" + className + ") : " + String(typeof(arguments[index])) + ' ')
+								arg_dump += ("arg" + index.toString() + " (" + className + ") : " + String(arguments[index]) + linebreak)
+							} catch(err) {
+								//console.log(err);
+								arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
+								arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)
+							}
 		        }
 		        method_info += "Reverse Call Stack: " + linebreak + getCaller() + linebreak + linebreak + {{clazz_hook}}_{{ method_hook }}.methodName + '( ' + arg_type+ ') '
 		        // var retval = eval('this.{{ method_name }}.apply(this, arguments)')

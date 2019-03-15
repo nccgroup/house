@@ -446,8 +446,8 @@ def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0,
     if(clazz_name != None) & (clazz_name != '') & (method_name != None) & (method_name != ''):
         context['clazz_name'] = clazz_name
         context['method_name'] = method_name
-        context['clazz_hook'] = str(clazz_name.split('.')[-1]) + '_hook'
-        context['method_hook'] = str(method_name.replace('.','_')) + '_hook'
+        context['clazz_hook'] = str(clazz_name.split('.')[-1].replace('-','').replace('$','')) + '_hook'
+        context['method_hook'] = str(method_name.replace('.','_').replace('-','').replace('$','')) + '_hook'
 
         if script_type == "inspect":
             result = render('./scripts/intercept/inspect.js',context)
@@ -472,8 +472,8 @@ def prepare_monitor_fragment(clazz_name, method_name, monitor_type='misc'):
     if(clazz_name != None) & (clazz_name != '') & (method_name != None) & (method_name != ''):
         context['clazz_name'] = clazz_name
         context['method_name'] = method_name
-        context['clazz_hook'] = str(clazz_name.split('.')[-1]) + '_hook'
-        context['method_hook'] = str(method_name.replace('.','_')) + '_hook'
+        context['clazz_hook'] = str(clazz_name.split('.')[-1].replace('-','').replace('$','')) + '_hook'
+        context['method_hook'] = str(method_name.replace('.','_').replace('-','').replace('$','')) + '_hook'
         context['monitor_type'] = monitor_type
 
         result = render('./scripts/monitor/monitor_frag.js',context)

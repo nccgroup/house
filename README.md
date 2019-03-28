@@ -134,6 +134,14 @@ Often occues when there are multiple USB devices connected, try to restart the t
 #### Frida error?
 House has been tested using Frida version 12.2.27; there might be some issues with some other versions, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
 
+## Acknowledgements
+Special thanks to following open-source projects for inspirations on House:
+
+1. [Frida](https://frida.re/), the great instrumentation toolkit that making all of these possible.
+2. [Objection](https://github.com/sensepost/objection), an inspiration and guide in building part of the Frida templating scripts of House.
+3. [Inspeckage](https://github.com/ac-pm/Inspeckage), an inspiration on the **Monitor** functionality of House.
+4. [0xdea/frida-scripts](https://github.com/0xdea/frida-scripts/tree/master/android-snippets) - a great Frida scripts arsenal.
+
 
 ## Contact
 If you have more questions about House, or want to help extending it, feel free to contact:

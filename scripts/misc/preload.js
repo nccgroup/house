@@ -165,6 +165,42 @@ function sslstrip() {
     });
 }
 
+
+function setProxy(){
+    Java.perform(function() {
+        System_hook = Java.use("java.lang.System");
+
+        var overloadz_System_hook = eval("System_hook.getProperty.overloads");
+        var ovl_count_System_hook = overloadz_System_hook.length;
+        var System_hook_getProperty_hook = null
+        
+                
+        for (var i = 0; i < ovl_count_System_hook; i++) {
+            System_hook_getProperty_hook = eval('System_hook.getProperty.overloads[i]')
+            System_hook_getProperty_hook.implementation = function () {
+             
+                // var retval = eval('this.getProperty.apply(this, arguments)')
+                try {
+                    retval = eval('this.getProperty.apply(this, arguments)')
+                    console.log(arguments[0])
+                    if (arguments[0] == 'https.proxyHost' || arguments[0] == 'http.proxyHost'){
+                        retval = '127.0.0.1'
+                    }else if(arguments[0] == 'https.proxyPort' || arguments[0] == 'https.proxyPort'){
+                        retval = '8080'
+                    }
+                } catch (err) {
+                    retval = null
+                    console.log("Exception - cannot compute retval.." + String(err))
+                }
+                console.log(retval)
+
+                return retval;
+            }
+        }
+        
+    });
+}
+
 try {
     Java.perform(function() {
         // var mainapp = Java.use('com.ha0k3.overloads.Testapp');
@@ -185,6 +221,11 @@ try {
         {% if PRELOAD_SSLSTRIP %}
         console.log("[FRIDA]PRELOAD_SSLSTRIP...")
         sslstrip()
+        {% endif %}
+
+        {% if PRELOAD_SETPROXY %}
+        console.log("[FRIDA]PRELOAD_SETPROXY...")
+        setProxy()
         {% endif %}
     });
 } catch (err) {

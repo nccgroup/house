@@ -78,6 +78,8 @@ class houseGlobal:
 							}
 		self.monitor_refresh = 0
 		self.preload_conf = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0}
+		self.gating_option = False
+		self.spawn = None
 		
 
 house_global = houseGlobal()

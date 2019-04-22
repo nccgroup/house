@@ -35,6 +35,12 @@
         
     </ul>
 
+    <h3 class="display-4">Proxy Setting (Current app only)</h3>
+    
+    <p> House support proxy over adb reverse binding, all app traffic will go through 127.0.0.1:8080 on the device;
+
+    run <code>adb reverse tcp:8080 tcp:8080</code> to bind it to the proxy host</p>
+
 </div>
 <div class="col-md-5">
     <hr>
@@ -50,6 +56,12 @@
                 <input type="checkbox" id="PRELOAD_SSLSTRIP" checked>
                 <span class="slider"></span>
             </label><small class="text-uppercase"><b> SSL Unpinning</b></small>
+        </div>
+        <div class="btn-group">
+            <label class="switch">
+                <input type="checkbox" id="PRELOAD_SETPROXY">
+                <span class="slider"></span>
+            </label><small class="text-uppercase"><b> Set Proxy</b></small>
         </div>
     </form>
     <br>

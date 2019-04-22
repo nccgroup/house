@@ -6,7 +6,7 @@ var tmp = null
 var save_script_data = null
 var monitor_messages = { "IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": [], "SQL": [] }
 var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_SQL': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1 }
-var preload_settings = { "PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0 }
+var preload_settings = { "PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0, "PRELOAD_SETPROXY" : 0 }
 var monitor_refresh = false;
 
 function refresh_device() {
@@ -32,6 +32,8 @@ function sideloadStetho() {
 function runpreload() {
     preload_settings['PRELOAD_STETHO'] = document.getElementById("PRELOAD_STETHO").checked ? 1 : 0
     preload_settings['PRELOAD_SSLSTRIP'] = document.getElementById("PRELOAD_SSLSTRIP").checked ? 1 : 0
+    preload_settings['PRELOAD_SETPROXY'] = document.getElementById("PRELOAD_SETPROXY").checked ? 1 : 0
+    
     socket.emit("runpreload", { preload_settings: preload_settings })
 }
 

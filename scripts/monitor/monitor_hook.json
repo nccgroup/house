@@ -32,6 +32,12 @@
       "type": "fileIO"
     },
     {
+      "classname": "java.io.File",
+      "methodname": "delete",
+      "type": "fileIO",
+      "instruction" : "console.log(this.getAbsolutePath());\nretval=true;"
+    },
+    {
       "classname": "android.app.SharedPreferencesImpl$EditorImpl",
       "methodname": "putString",
       "type": "SHAREDPREFERENCES"
@@ -102,6 +108,16 @@
       "type": "SHAREDPREFERENCES"
     },
     {
+      "classname": "com.android.server.ConnectivityService",
+      "methodname": "getProxyForNetwork",
+      "type": "HTTP"
+    },
+    {
+      "classname": "com.android.server.ConnectivityService",
+      "methodname": "getDefaultProxy",
+      "type": "HTTP"
+    },
+    {
       "classname": "java.net.HttpURLConnection",
       "methodname": "$init",
       "type": "HTTP"
@@ -109,6 +125,11 @@
     {
       "classname": "com.android.okhttp.OkHttpClient",
       "methodname": "open",
+      "type": "HTTP"
+    },
+    {
+      "classname": "okhttp3.OkHttpClient",
+      "methodname": "newCall",
       "type": "HTTP"
     },
     {
@@ -189,22 +210,22 @@
     {
       "classname": "android.content.ContextWrapper",
       "methodname": "sendBroadcast",
-      "type": "IGNORE"
+      "type": "IPC"
     },
     {
       "classname": "android.content.ContextWrapper",
       "methodname": "registerReceiver",
-      "type": "IGNORE"
+      "type": "IPC"
     },
     {
       "classname": "android.content.Intent",
       "methodname": "getStringExtra",
-      "type": "IGNORE"
+      "type": "IPC"
     },
     {
       "classname": "android.content.Intent",
       "methodname": "getStringArrayExtra",
-      "type": "IGNORE"
+      "type": "IPC"
     },
     {
       "classname": "android.content.Intent",
@@ -214,22 +235,27 @@
     {
       "classname": "android.content.Intent",
       "methodname": "parseUri",
-      "type": "IGNORE"
+      "type": "IPC"
     },
     {
       "classname": "android.content.Intent",
       "methodname": "registerReceiver",
-      "type": "IGNORE"
+      "type": "IPC"
     },
     {
       "classname": "android.content.Intent",
       "methodname": "registerReceiver",
-      "type": "IGNORE"
+      "type": "IPC"
     },
     {
       "classname": "okhttp3.CertificatePinner",
       "methodname": "check",
-      "type": "MISC"
+      "type": "IGNORE"
+    },
+    {
+      "classname": "android.net.Uri",
+      "methodname": "getHost",
+      "type": "IGNORE"
     }
   ]
 }

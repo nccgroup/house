@@ -3,7 +3,7 @@ var env_signature = "t3llm3mor3ab0ut1t"
 var applicationName = null
 
 Java.perform(function() {
-    console.log("In da house..getting env..")
+    console.log("In da house..env.js")
     var ActivityThread = Java.use('android.app.ActivityThread');
     var Application = Java.use('android.app.Application')
     var app = ActivityThread.currentApplication();

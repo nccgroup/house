@@ -22,6 +22,7 @@
 
 from houseStatic import *
 from houseGlobal import house_global,socketio, random_token
+# from plugin import log_r_value
 # from houseGlobal import env_html, enum_html, intercepts_html, preload_html, hooks_html, monitor_html
 from _frida import ProcessNotFoundError
 import traceback, IPython
@@ -44,6 +45,10 @@ def init_conf():
     if not (os.path.isfile("./config/monitor_conf.json")):
         with open("./config/monitor_conf.json",'w') as f:
             f.write('{"SWITCH_FILEIO": 0, "SWITCH_HTTP": 0, "SWITCH_MISC": 0, "SWITCH_WEBVIEW": 0, "SWITCH_SQL": 0, "SWITCH_IPC": 0}')
+    if not (os.path.isfile("./config/preload_conf.json")):
+        with open("./config/preload_conf.json",'w') as f:
+            f.write('{"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 1, "PRELOAD_SETPROXY": 0}')
+
 
 def init_cache():
     if not (os.path.exists('cache/hook')):
@@ -333,6 +338,7 @@ def onMessage(message,data):
         args = j_info.get("arg_dump")
         method = j_info.get("method_info")
         retval = j_info.get("retval_dump")
+        # special_instruction = j_info.get("special_inst")  # experimental
 
         if args != None:
             args = cgi.escape(args).replace(linebreak,'<br>')
@@ -342,7 +348,10 @@ def onMessage(message,data):
             retval = cgi.escape(retval).replace(linebreak,'<br>')
 
         info_dict = {"methodname":method,"args":args,"retval":retval}
+
         house_global.messages.insert(0,info_dict)
+        # if special_instruction != None:  # experimental
+        #     log_r_value(special_instruction)
 
         socketio.emit('new_hook_message',
                               {'data': json.dumps(info_dict)},
@@ -426,6 +435,7 @@ def onMessage(message,data):
         socketio.emit('new_repl',
                       {'data': house_global.new_repl_msg, 'time': house_global.new_repl_time},
                       namespace='/eventBus')        
+
     
 
 def render(tpl_path, context):
@@ -434,14 +444,15 @@ def render(tpl_path, context):
         loader=jinja2.FileSystemLoader(path or './')
     ).get_template(filename).render(context)
 
-def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0,overload_type=None):
+def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0,overload_type=None,instruction=None):
     context = {
     'clazz_name' : '',
     'method_name' : '',
     'clazz_hook' : '',
     'method_hook' : '',
     'overloadIndex' : str(overloadIndex),
-    'overload_type' : overload_type
+    'overload_type' : overload_type,
+    'instruction' : ''
     }
     if(clazz_name != None) & (clazz_name != '') & (method_name != None) & (method_name != ''):
         context['clazz_name'] = clazz_name
@@ -460,13 +471,14 @@ def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0,
         print (stylize("[!]prepare_script_fragment Error with {} - {} - {} ".format(clazz_name, method_name,script_type),Error))
         return ''
 
-def prepare_monitor_fragment(clazz_name, method_name, monitor_type='misc'):
+def prepare_monitor_fragment(clazz_name, method_name, monitor_type='misc', instruction = None):
     context = {
     'clazz_name' : '',
     'method_name' : '',
     'clazz_hook' : '',
     'method_hook' : '',
-    'monitor_type': ''
+    'monitor_type': '',
+    'instruction' : instruction
     }
     result = ''
     if(clazz_name != None) & (clazz_name != '') & (method_name != None) & (method_name != ''):
@@ -522,6 +534,7 @@ def build_hook_script():
         clazz_name = entry['classname']
         method_name = entry['methodname']
         overload_type = entry.get('overload_type')
+        instruction = entry.get('instruction')
         # IPython.embed()
         if ".so" not in clazz_name:
             realscript += prepare_script_fragment(clazz_name, method_name, "hook", overload_type = overload_type)
@@ -537,7 +550,7 @@ def build_hook_script():
     cache_script("hooks_cache", house_global.hook_script)
 
 def build_env_script():
-    print(stylize("[+]Building env script for " + house_global.packagename + " .. ", Info))
+    # print(stylize("[+]Building env script for " + house_global.packagename + " .. ", Info))
     result = ''
     if house_global.packagename != None:
         result = render('./scripts/enum/env.js', {'packageName': house_global.packagename})
@@ -555,6 +568,7 @@ def build_monitor_script():
         for file_monitor_list_entry in file_monitor_list:
             type_to_build = file_monitor_list_entry['type']
             method_to_build = file_monitor_list_entry['methodname']
+            instruction = file_monitor_list_entry.get('instruction')
             if house_global.monitor_conf.get('SWITCH_' + type_to_build.upper()) == 1:
                 render_monitor_list.append(file_monitor_list_entry)
     except Exception as e:
@@ -567,8 +581,9 @@ def build_monitor_script():
         clazz_name = render_monitor_list_entry['classname']
         method_name = render_monitor_list_entry['methodname']
         monitor_type = render_monitor_list_entry['type']
+        instruction = render_monitor_list_entry.get('instruction')
 
-        monitorscript_fragment += prepare_monitor_fragment(clazz_name, method_name,monitor_type)
+        monitorscript_fragment += prepare_monitor_fragment(clazz_name, method_name,monitor_type, instruction)
     context = {'scripts': monitorscript_fragment}
     result = render('./scripts/monitor/monitor_tpl.js',context)
 
@@ -608,7 +623,7 @@ def preload_stetho_script():
 
                 house_global.stetho_script_object.load()
 
-                print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+                # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
                 if pending: 
                     # IPython.embed()
@@ -631,15 +646,31 @@ def run_preload_script():
         preload_context = {
             "application_name": "",
             "PRELOAD_STETHO": "",
-            "PRELOAD_SSLSTRIP": ""
+            "PRELOAD_SSLSTRIP": "",
+            "PRELOAD_SETPROXY": ""
         }
         if (house_global.preload_conf.get('PRELOAD_STETHO') == 1):preload_context['PRELOAD_STETHO'] = 'yes'
         if (house_global.preload_conf.get('PRELOAD_SSLSTRIP') == 1):preload_context['PRELOAD_SSLSTRIP'] = 'yes'
+        if (house_global.preload_conf.get('PRELOAD_SETPROXY') == 1):preload_context['PRELOAD_SETPROXY'] = 'yes'
+
+
+        # try:  
+    #         pid = house_global.device.get_process(house_global.packagename).pid
+    #         house_global.session = house_global.device.attach(house_global.packagename)
+
         try:
-            print (stylize("[!] Have to reload to preload, trying to spawn it..", MightBeImportant))
-            pid = house_global.device.spawn([house_global.packagename])
-            house_global.session = house_global.device.attach(pid)
-            pending = True
+            if (house_global.preload_conf.get('PRELOAD_STETHO') == 1):
+                print (stylize("[!] Have to reload to preload, trying to spawn it..", MightBeImportant))
+
+                pid = house_global.device.spawn([house_global.packagename])
+                house_global.session = house_global.device.attach(pid)
+                pending = True
+            else:
+                print (stylize("[!] No need to reload..", MightBeImportant))
+
+                pid = house_global.device.get_process(house_global.packagename).pid
+                house_global.session = house_global.device.attach(house_global.packagename)
+                pending = False
 
             if get_application_name() == None:
                 print (stylize("[!] What is the application name? Try refresh House", Error))
@@ -655,7 +686,7 @@ def run_preload_script():
 
                 house_global.preload_script_object.load()
 
-                print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+                # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
                 if pending: 
                     # IPython.embed()
@@ -669,7 +700,21 @@ def run_preload_script():
         print (stylize('[!]Please tell me what you want!', Error))
         raise Exception(" Failed to load script")
 
+def on_spawned(spawn):
+    print('on_spawned:', spawn)
+    if spawn.identifier is not None and spawn.identifier.startswith('xxx'):
+        print('Instrumenting:', spawn)
+        house_global.session = house_global.device.attach(spawn.pid)
+        
+        house_global.script = house_global.session.create_script(house_global.script_to_load)
+            # IPython.embed()
+            
+        house_global.script.on('message',onMessage)
+        house_global.script.load()
 
+        # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+    house_global.device.resume(spawn.pid)
+    # print('Processed:', spawn)
 
 def load_script():
     global Info
@@ -679,15 +724,21 @@ def load_script():
         unload_script()
         try:
             pending = False
-            try:
-                
+            try:  
                 pid = house_global.device.get_process(house_global.packagename).pid
                 house_global.session = house_global.device.attach(house_global.packagename)
             except ProcessNotFoundError as e:
-                print (stylize("[!] Process not found, trying to spawn it..", MightBeImportant))
-                pid = house_global.device.spawn([house_global.packagename])
-                house_global.session = house_global.device.attach(pid)
-                pending = True
+                if(house_global.gating_option):
+                    house_global.device.enable_spawn_gating()
+                    print (stylize("[!] Process not found, trying spawn-gating it..", MightBeImportant))
+                    house_global.device.on('spawn-added', on_spawned)
+                    return
+
+                else:
+                    print (stylize("[!] Process not found, trying to spawn it..", MightBeImportant))
+                    pid = house_global.device.spawn([house_global.packagename])
+                    house_global.session = house_global.device.attach(pid)
+                    pending = True
 
             house_global.script = house_global.session.create_script(house_global.script_to_load)
             # IPython.embed()
@@ -695,7 +746,7 @@ def load_script():
             house_global.script.on('message',onMessage)
             house_global.script.load()
 
-            print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+            # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
             if pending: 
                 # IPython.embed()

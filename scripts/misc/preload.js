@@ -79,9 +79,9 @@ function sslstrip() {
             console.log("[-] TrustManagerImpl Not Found");
         }
 
-        console.log("[.] TrustManager Android < 7 detection...");
+        // console.log("[.] TrustManager Android < 7 detection...");
         // credit: https://codeshare.frida.re/@pcipolloni/universal-android-ssl-pinning-bypass-with-frida/
-        console.log("[+] Loading our CA...")
+        // console.log("[+] Loading our CA...")
         cf = CertificateFactory.getInstance("X.509");
         
         try {
@@ -96,24 +96,24 @@ function sslstrip() {
         bufferedInputStream.close();
 
         var certInfo = Java.cast(ca, X509Certificate);
-        console.log("[o] Our CA Info: " + certInfo.getSubjectDN());
+        // console.log("[o] Our CA Info: " + certInfo.getSubjectDN());
 
         // Create a KeyStore containing our trusted CAs
-        console.log("[+] Creating a KeyStore for our CA...");
+        // console.log("[+] Creating a KeyStore for our CA...");
         var keyStoreType = KeyStore.getDefaultType();
         var keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, null);
         keyStore.setCertificateEntry("ca", ca);
         
         // Create a TrustManager that trusts the CAs in our KeyStore
-        console.log("[+] Creating a TrustManager that trusts the CA in our KeyStore...");
+        // console.log("[+] Creating a TrustManager that trusts the CA in our KeyStore...");
         var tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
         var tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
         tmf.init(keyStore);
         console.log("[+] Our TrustManager is ready...");
 
-        console.log("[+] Hijacking SSLContext methods now...")
-        console.log("[-] Waiting for the app to invoke SSLContext.init()...")
+        // console.log("[+] Hijacking SSLContext methods now...")
+        // console.log("[-] Waiting for the app to invoke SSLContext.init()...")
 
         try{
             SSLContext.init.overload("[Ljavax.net.ssl.KeyManager;", "[Ljavax.net.ssl.TrustManager;", "java.security.SecureRandom").implementation = function(a,b,c) {
@@ -145,7 +145,7 @@ function sslstrip() {
         }
 
         //--------
-        console.log("[.] Appcelerator Titanium detection...");
+        // console.log("[.] Appcelerator Titanium detection...");
         // Appcelerator Titanium PinningTrustManager
         // Wrap the logic in a try/catch as not all applications will have
         // appcelerator as part of the app.
@@ -165,12 +165,48 @@ function sslstrip() {
     });
 }
 
+
+function setProxy(){
+    Java.perform(function() {
+        System_hook = Java.use("java.lang.System");
+
+        var overloadz_System_hook = eval("System_hook.getProperty.overloads");
+        var ovl_count_System_hook = overloadz_System_hook.length;
+        var System_hook_getProperty_hook = null
+        
+                
+        for (var i = 0; i < ovl_count_System_hook; i++) {
+            System_hook_getProperty_hook = eval('System_hook.getProperty.overloads[i]')
+            System_hook_getProperty_hook.implementation = function () {
+             
+                // var retval = eval('this.getProperty.apply(this, arguments)')
+                try {
+                    retval = eval('this.getProperty.apply(this, arguments)')
+                    console.log(arguments[0])
+                    if (arguments[0] == 'https.proxyHost' || arguments[0] == 'http.proxyHost'){
+                        retval = '127.0.0.1'
+                    }else if(arguments[0] == 'https.proxyPort' || arguments[0] == 'https.proxyPort'){
+                        retval = '8080'
+                    }
+                } catch (err) {
+                    retval = null
+                    console.log("Exception - cannot compute retval.." + String(err))
+                }
+                console.log(retval)
+
+                return retval;
+            }
+        }
+        
+    });
+}
+
 try {
     Java.perform(function() {
         // var mainapp = Java.use('com.ha0k3.overloads.Testapp');
         var mainapp = Java.use('{{application_name}}');
         // console.log(String(mainapp)) 
-        console.log("[FRIDA]PRELOAD...")
+        console.log("In da house..preload.js")
         {% if PRELOAD_STETHO %}
 
         mainapp.onCreate.implementation = function() {
@@ -185,6 +221,11 @@ try {
         {% if PRELOAD_SSLSTRIP %}
         console.log("[FRIDA]PRELOAD_SSLSTRIP...")
         sslstrip()
+        {% endif %}
+
+        {% if PRELOAD_SETPROXY %}
+        console.log("[FRIDA]PRELOAD_SETPROXY...")
+        setProxy()
         {% endif %}
     });
 } catch (err) {

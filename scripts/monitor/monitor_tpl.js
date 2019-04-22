@@ -10,12 +10,13 @@ function getTime(){
 }
 
 function getCaller(){
-	return clazz_Thread.currentThread().getStackTrace().slice(2,5).reverse().toString().replace(/,/g,linebreak);
+	return clazz_Thread.currentThread().getStackTrace().slice(2,17).reverse().toString().replace(/,/g,linebreak);
 }
 
 setTimeout(function() {
     Java.perform(function() {
     	clazz_Thread = Java.use("java.lang.Thread");
+    	console.log("In da house..monitor_tpl.js")
 {{scripts}}
     });
 }, 0);

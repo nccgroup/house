@@ -15,7 +15,7 @@ function getCaller(){
 
 setTimeout(function() {
     Java.perform(function() {
-    	console.log("In da house..")
+    	console.log("In da house..hook_tpl.js")
     	clazz_Thread = Java.use("java.lang.Thread");
 {{scripts}}
     });

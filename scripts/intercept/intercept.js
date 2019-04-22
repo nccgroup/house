@@ -36,7 +36,7 @@ setTimeout(function() {
             context = app.getApplicationContext();
         }
 
-        console.log("In da house..")
+        console.log("In da house..intercept.js")
         {{clazz_hook}} = Java.use("{{clazz_name}}");
         clazz_Thread = Java.use("java.lang.Thread");
         clazz_Exception = Java.use("java.lang.Exception");

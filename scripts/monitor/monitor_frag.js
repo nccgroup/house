@@ -14,15 +14,24 @@
 			    	var arg_dump = ''
 			    	var arg_type = ''
 			    	var ret_type = String({{clazz_hook}}_{{ method_hook }}.returnType['className'])
+			    	var retval = null
 
 			        for (var index = 0; index < arguments.length; index++) {
 			        	arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
 			        	arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)
 			        }
 			        method_info += getCaller() + linebreak + {{clazz_hook}}_{{ method_hook }}.methodName + '( ' + arg_type+ ') '
+			        // method_info += {{clazz_hook}}_{{ method_hook }}.methodName + '( ' + arg_type+ ') '
+
 			        // var retval = eval('this.{{ method_name }}.apply(this, arguments)')
 			        try {
-		                retval = eval('this.{{ method_name }}.apply(this, arguments)')
+			        	{% if instruction %}
+				        console.log("[Monitor]..")
+				        {{instruction}}
+				        {% endif %}
+				        if (retval == null){
+			                retval = eval('this.{{ method_name }}.apply(this, arguments)')
+				        }
 		            } catch (err) {
 		                retval = null
 		                console.log("Exception - cannot compute retval.." + String(err))

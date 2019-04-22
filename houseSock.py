@@ -357,7 +357,7 @@ def doloadMonitor(monitor_message):
 
 @socketio.on('endpreload', namespace='/eventBus')
 def endpreload():
-    house_global.preload_conf = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 1}
+    house_global.preload_conf = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 1, "PRELOAD_SETPROXY" : 0}
     update_conf()
     try:
         unload_script("preload")

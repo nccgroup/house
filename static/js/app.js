@@ -72,6 +72,8 @@ function uncheckAll() {
 function uncheckpreload() {
     document.getElementById("PRELOAD_STETHO").checked = false
     document.getElementById("PRELOAD_SSLSTRIP").checked = false
+    document.getElementById("PRELOAD_SETPROXY").checked = false
+    
 }
 
 
@@ -434,6 +436,7 @@ window.onload = function() {
             uncheckpreload()
             document.getElementById("PRELOAD_STETHO").checked = (preload_settings.PRELOAD_STETHO == 1) ? true : false
             document.getElementById("PRELOAD_SSLSTRIP").checked = (preload_settings.PRELOAD_SSLSTRIP == 1) ? true : false
+            document.getElementById("PRELOAD_SETPROXY").checked = (preload_settings.PRELOAD_SSLSTRIP == 1) ? true : false
 
         })
     }

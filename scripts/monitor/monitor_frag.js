@@ -1,5 +1,4 @@
 		try{
-			console.log("In da house..load monitor")
 			{{clazz_hook}} = Java.use("{{clazz_name}}");
 			var overloadz_{{clazz_hook}} = eval("{{clazz_hook}}.{{method_name}}.overloads");
 			var ovl_count_{{clazz_hook}} = overloadz_{{clazz_hook}}.length;

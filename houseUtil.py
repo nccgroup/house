@@ -45,6 +45,10 @@ def init_conf():
     if not (os.path.isfile("./config/monitor_conf.json")):
         with open("./config/monitor_conf.json",'w') as f:
             f.write('{"SWITCH_FILEIO": 0, "SWITCH_HTTP": 0, "SWITCH_MISC": 0, "SWITCH_WEBVIEW": 0, "SWITCH_SQL": 0, "SWITCH_IPC": 0}')
+    if not (os.path.isfile("./config/preload_conf.json")):
+        with open("./config/preload_conf.json",'w') as f:
+            f.write('{"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 1, "PRELOAD_SETPROXY": 0}')
+
 
 def init_cache():
     if not (os.path.exists('cache/hook')):
@@ -484,8 +488,6 @@ def prepare_monitor_fragment(clazz_name, method_name, monitor_type='misc', instr
         context['method_hook'] = str(method_name.replace('.','_')) + '_hook'
         context['monitor_type'] = monitor_type
 
-        print(context)
-
         result = render('./scripts/monitor/monitor_frag.js',context)
     return result
 
@@ -548,7 +550,7 @@ def build_hook_script():
     cache_script("hooks_cache", house_global.hook_script)
 
 def build_env_script():
-    print(stylize("[+]Building env script for " + house_global.packagename + " .. ", Info))
+    # print(stylize("[+]Building env script for " + house_global.packagename + " .. ", Info))
     result = ''
     if house_global.packagename != None:
         result = render('./scripts/enum/env.js', {'packageName': house_global.packagename})
@@ -621,7 +623,7 @@ def preload_stetho_script():
 
                 house_global.stetho_script_object.load()
 
-                print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+                # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
                 if pending: 
                     # IPython.embed()
@@ -684,7 +686,7 @@ def run_preload_script():
 
                 house_global.preload_script_object.load()
 
-                print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+                # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
                 if pending: 
                     # IPython.embed()
@@ -710,7 +712,7 @@ def on_spawned(spawn):
         house_global.script.on('message',onMessage)
         house_global.script.load()
 
-        print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+        # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
     house_global.device.resume(spawn.pid)
     # print('Processed:', spawn)
 
@@ -744,7 +746,7 @@ def load_script():
             house_global.script.on('message',onMessage)
             house_global.script.load()
 
-            print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
+            # print (stylize('[+] Loading the new script..{} {}'.format(str(house_global.device), str(house_global.packagename)), Info))
 
             if pending: 
                 # IPython.embed()

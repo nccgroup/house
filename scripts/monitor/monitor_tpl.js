@@ -16,6 +16,7 @@ function getCaller(){
 setTimeout(function() {
     Java.perform(function() {
     	clazz_Thread = Java.use("java.lang.Thread");
+    	console.log("In da house..monitor_tpl.js")
 {{scripts}}
     });
 }, 0);

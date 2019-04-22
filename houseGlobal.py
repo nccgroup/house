@@ -77,9 +77,9 @@ class houseGlobal:
 							  "SWITCH_SHAREDPREFERENCES": 1
 							}
 		self.monitor_refresh = 0
-		self.preload_conf = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0}
+		self.preload_conf = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 1, "PRELOAD_SETPROXY" : 0}
 		self.gating_option = False
-		self.spawn = None
+		self.spawn = None 		# experimental
 		
 
 house_global = houseGlobal()

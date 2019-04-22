@@ -110,12 +110,12 @@
     {
       "classname": "com.android.server.ConnectivityService",
       "methodname": "getProxyForNetwork",
-      "type": "HTTP"
+      "type": "IGNORE"
     },
     {
       "classname": "com.android.server.ConnectivityService",
       "methodname": "getDefaultProxy",
-      "type": "HTTP"
+      "type": "IGNORE"
     },
     {
       "classname": "java.net.HttpURLConnection",

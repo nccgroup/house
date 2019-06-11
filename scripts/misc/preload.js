@@ -1,6 +1,5 @@
 function loadStetho() {
     Java.perform(function() {
-        console.log("!!!loadStetho invoked!")
         // get handles to the classes   
         const ActivityThread = Java.use("android.app.ActivityThread");
         const File = Java.use('java.io.File');
@@ -17,7 +16,6 @@ function loadStetho() {
         var jarFile = File.$new("/data/local/tmp/stetho.jar");
         var application = ActivityThread.currentApplication();
         var context = application.getApplicationContext();
-        console.log(String(context))
         var fileAbsPath = jarFile.getAbsolutePath();
 
 
@@ -35,8 +33,7 @@ function loadStetho() {
             if (Stetho_methods[i].getName() == "initializeWithDefaults") {
                 func_initializeWithDefaults = Stetho_methods[i];
                 // Found: public static void com.facebook.stetho.Stetho.initializeWithDefaults(android.content.Context)
-                console.log("!!!success stetho")
-                console.log(Stetho_methods[i].getName())
+                // console.log(Stetho_methods[i].getName())
                 break;
             }
             console.log("Did not find initializeWithDefaults..");

@@ -14,9 +14,10 @@
     </p>
     <h4>Here is what you need to do to make it work:</h4>
     <ul class="list-unstyled">
-        <li>1. Download Stetho <a href="https://github.com/facebook/stetho/releases/download/v1.5.0/stetho-1.5.0-fatjar.jar" target="_blank">stand-alone JAR.</a></li>
+        <li>1. Download Stetho <a href="https://github.com/facebook/stetho/releases/download/v1.5.1/stetho-1.5.1-fatjar.jar" target="_blank">stand-alone JAR.</a></li>
         <li>2. Rename the download to <code>stetho.jar</code>.</li>
-        <li>3. Push the jar to the device under this diretory: <code>/data/local/tmp/stetho.jar</code>, e.g. <code>adb push stetho.jar /data/local/tmp/</code>.</li>
+        <li>2.1 Convert the jar file to dex, using tool such as <a href="https://sourceforge.net/projects/dex2jar/">dextojar</a> <code>d2j-jar2dex.sh stetho.jar</code>.</li>
+        <li>3. Push the converted-dex file to the device under this diretory: <code>/data/local/tmp/stetho.jar</code>, e.g. <code>adb push stetho-jar2dex.dex /data/local/tmp/stetho.jar</code>.</li>
         <li>4. Click the <code>Load</code> button below, note this would restart the application.</li>
         <li>5. To unload <code>stetho.jar</code>, simply restart the app.</li>
         <li>6. What's new on <code>chrome://inspect/#devices</code>?</li>

@@ -1,6 +1,6 @@
 function loadStetho() {
     Java.perform(function() {
-
+        console.log("!!!loadStetho invoked!")
         // get handles to the classes   
         const ActivityThread = Java.use("android.app.ActivityThread");
         const File = Java.use('java.io.File');
@@ -24,20 +24,22 @@ function loadStetho() {
         var classloader = DexClassLoader.$new(fileAbsPath, context.getCacheDir().getAbsolutePath().toString(), null, application.getClassLoader());
 
         //load stetho.jar classes
-
+        
         var Stetho = classloader.loadClass("com.facebook.stetho.Stetho", true);
         var StethoCast = Java.cast(Stetho, Class);
         var Stetho_methods = StethoCast.getDeclaredMethods();
+        
 
         var func_initializeWithDefaults = null;
         for (i = 0; i < Stetho_methods.length; i++) {
             if (Stetho_methods[i].getName() == "initializeWithDefaults") {
                 func_initializeWithDefaults = Stetho_methods[i];
                 // Found: public static void com.facebook.stetho.Stetho.initializeWithDefaults(android.content.Context)
+                console.log("!!!success stetho")
                 console.log(Stetho_methods[i].getName())
                 break;
             }
-            // console.log("Did not find initializeWithDefaults..");
+            console.log("Did not find initializeWithDefaults..");
 
         }
 
@@ -66,7 +68,7 @@ function sslstrip() {
             var TrustManagerImpl = Java.use('com.android.org.conscrypt.TrustManagerImpl');
             
             TrustManagerImpl.verifyChain.implementation = function(untrustedChain, trustAnchorChain, host, clientAuth, ocspData, tlsSctData) {
-                console.log("[+] (Android 7+) TrustManagerImpl verifyChain() called. Not throwing an exception.");
+                // console.log("[+] (Android 7+) TrustManagerImpl verifyChain() called. Not throwing an exception.");
                 // Skip all the logic and just return the chain again :P
                 //is_android_n = 1;
                 return untrustedChain;
@@ -117,9 +119,9 @@ function sslstrip() {
 
         try{
             SSLContext.init.overload("[Ljavax.net.ssl.KeyManager;", "[Ljavax.net.ssl.TrustManager;", "java.security.SecureRandom").implementation = function(a,b,c) {
-            console.log("[o] App invoked javax.net.ssl.SSLContext.init...");
+            // console.log("[o] App invoked javax.net.ssl.SSLContext.init...");
             SSLContext.init.overload("[Ljavax.net.ssl.KeyManager;", "[Ljavax.net.ssl.TrustManager;", "java.security.SecureRandom").call(this, a, tmf.getTrustManagers(), c);
-            console.log("[+] SSLContext initialized with our custom TrustManager!");
+            // console.log("[+] SSLContext initialized with our custom TrustManager!");
         }
         }catch (err) {
             console.log("[-] TrustManager Not Found");
@@ -134,9 +136,9 @@ function sslstrip() {
         // credit: https://codeshare.frida.re/@masbog/frida-android-unpinning-ssl/
         try {
             var CertificatePinner = Java.use('okhttp3.CertificatePinner');
-            console.log("[+] OkHTTP 3.x Found");
+            // console.log("[+] OkHTTP 3.x Found");
             CertificatePinner.check.overload('java.lang.String', 'java.util.List').implementation = function() {
-                console.log("[+] OkHTTP 3.x check() called. Not throwing an exception.");
+                // console.log("[+] OkHTTP 3.x check() called. Not throwing an exception.");
             };
         } catch (err) {
             // If we dont have a ClassNotFoundException exception, raise the
@@ -151,9 +153,9 @@ function sslstrip() {
         // appcelerator as part of the app.
         try {
             var PinningTrustManager = Java.use('appcelerator.https.PinningTrustManager');
-            console.log("[+] Appcelerator Titanium Found");
+            // console.log("[+] Appcelerator Titanium Found");
             PinningTrustManager.checkServerTrusted.implementation = function() {
-                console.log("[+] Appcelerator checkServerTrusted() called. Not throwing an exception.");
+                // console.log("[+] Appcelerator checkServerTrusted() called. Not throwing an exception.");
             }
 
         } catch (err) {
@@ -182,7 +184,7 @@ function setProxy(){
                 // var retval = eval('this.getProperty.apply(this, arguments)')
                 try {
                     retval = eval('this.getProperty.apply(this, arguments)')
-                    console.log(arguments[0])
+                    // console.log(arguments[0])
                     if (arguments[0] == 'https.proxyHost' || arguments[0] == 'http.proxyHost'){
                         retval = '127.0.0.1'
                     }else if(arguments[0] == 'https.proxyPort' || arguments[0] == 'https.proxyPort'){

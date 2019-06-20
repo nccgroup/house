@@ -591,7 +591,7 @@ def build_monitor_script():
     cache_script("monitor_cache", house_global.monitor_script)
 
 def build_enum_script(option, class_to_find, class_pattern):
-    if (class_to_find != None) & (".so" in class_to_find):
+    if (class_to_find != None) & (".so" in class_to_find) & (option == "enumClassMethods"):
         option = "enumLibSo"
 
     context = {'option': option, 'class_to_find': class_to_find, 'class_pattern': class_pattern, 'apk_path': get_apk_path()}

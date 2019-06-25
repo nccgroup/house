@@ -1,5 +1,5 @@
 		try{
-			{{clazz_hook}} = Java.use("{{clazz_name}}");
+			var {{clazz_hook}} = Java.use("{{clazz_name}}");
 			var overloadz_{{clazz_hook}} = eval("{{clazz_hook}}.{{method_name}}.overloads");
 			var ovl_count_{{clazz_hook}} = overloadz_{{clazz_hook}}.length;
 			
@@ -7,7 +7,7 @@
 			var cell = {}
 
 			for (var i = 0; i < ovl_count_{{clazz_hook}}; i++) {
-				{{clazz_hook}}_{{ method_hook }} = {{clazz_hook}}.{{ method_name }}.overloads[i]
+				var {{clazz_hook}}_{{ method_hook }} = {{clazz_hook}}.{{ method_name }}.overloads[i]
 			    {{clazz_hook}}_{{ method_hook }}.implementation = function () {
 			    	var sendback = ''
 			    	var method_info = ''

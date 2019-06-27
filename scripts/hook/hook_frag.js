@@ -1,4 +1,4 @@
-		{{clazz_hook}} = Java.use("{{clazz_name}}");
+		var {{clazz_hook}} = Java.use("{{clazz_name}}");
 		var overloadz_{{clazz_hook}} = eval("{{clazz_hook}}.{{method_name}}.overloads");
 		var ovl_count_{{clazz_hook}} = overloadz_{{clazz_hook}}.length;
 		var {{clazz_hook}}_{{ method_hook }} = null
@@ -8,7 +8,7 @@
 
 		
 		{% if overload_type%}
-		{{clazz_hook}}_{{ method_hook }} = eval("{{clazz_hook}}.{{ method_name }}.overload({{overload_type}})")
+		var {{clazz_hook}}_{{ method_hook }} = eval("{{clazz_hook}}.{{ method_name }}.overload({{overload_type}})")
 	    {{clazz_hook}}_{{ method_hook }}.implementation = function () {
 	    	var sendback = ''
 	    	var hook_signature = '-hoo00ook-'
@@ -16,6 +16,7 @@
 	    	var arg_dump = ''
 	    	var arg_type = ''
 	    	var ret_type = String({{clazz_hook}}_{{ method_hook }}.returnType['className'])
+	    	var retval = null
 
 	        for (var index = 0; index < arguments.length; index++) {
 	        	arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
@@ -40,7 +41,7 @@
 		{% else %}
 		send("There are " + ovl_count_{{clazz_hook}}.toString() + " methods to hook");
 		for (var i = 0; i < ovl_count_{{clazz_hook}}; i++) {
-			{{clazz_hook}}_{{ method_hook }} = eval('{{clazz_hook}}.{{ method_name }}.overloads[i]')
+			var {{clazz_hook}}_{{ method_hook }} = eval('{{clazz_hook}}.{{ method_name }}.overloads[i]')
 		    {{clazz_hook}}_{{ method_hook }}.implementation = function () {
 		    	var sendback = ''
 		    	var hook_signature = '-hoo00ook-'
@@ -48,6 +49,7 @@
 		    	var arg_dump = ''
 		    	var arg_type = ''
 		    	var ret_type = String({{clazz_hook}}_{{ method_hook }}.returnType['className'])
+		    	var retval = null
 		        for (var index = 0; index < arguments.length; index++) {
 		        	arg_type += ('argType' + index.toString() + " : " + String(typeof(arguments[index])) + ' ')
 		        	arg_dump += ("arg" + index.toString() + ": " + String(arguments[index]) + linebreak)

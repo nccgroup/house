@@ -132,7 +132,7 @@ Also please try to restart **both** the frida server and House, if still not wor
 Often occues when there are multiple USB devices connected, try to restart the target application.
 
 #### Frida error?
-House has been tested using Frida version 12.2.27; there might be some issues with some other versions, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
+House has been tested using Frida version 12.6.8; there might be some issues with some other versions, also make sure frida-python matches frida-server's version. If still not working, try to run the generated frida scripts manually to see if it works.
 
 ## Acknowledgements
 Special thanks to following open-source projects for inspirations on House:

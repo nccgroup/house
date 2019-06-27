@@ -3,6 +3,11 @@ var ret_constructor = null
 var tmp_obj = null
 var fields = null
 var clazz_Thread = null
+var clazz = null
+var field = null
+var BaseDexClassLoader = null
+var Toast = null
+var Log = null
 
 function setRetval(ret){
     if (retval != null){
@@ -37,9 +42,9 @@ setTimeout(function() {
         }
 
         console.log("In da house..intercept.js")
-        {{clazz_hook}} = Java.use("{{clazz_name}}");
+        var {{clazz_hook}} = Java.use("{{clazz_name}}");
         clazz_Thread = Java.use("java.lang.Thread");
-        clazz_Exception = Java.use("java.lang.Exception");
+        var clazz_Exception = Java.use("java.lang.Exception");
         clazz = Java.use("java.lang.Class");
         field = Java.use("java.lang.reflect.Field");
         BaseDexClassLoader = Java.use("dalvik.system.BaseDexClassLoader");
@@ -52,12 +57,16 @@ setTimeout(function() {
         var timestamp = Date.now()
         var recv_time = ''
         var recv_data = ''
+        var recv_option = ''
 
-        {{clazz_hook}}_{{ method_hook }} = eval('{{clazz_hook}}.{{ method_name }}.overloads[{{overloadIndex}}]')
+        var {{clazz_hook}}_{{ method_hook }} = eval('{{clazz_hook}}.{{ method_name }}.overloads[{{overloadIndex}}]')
 
         {{clazz_hook}}_{{ method_hook }}.implementation = function() {
             var sendback = ''
-            args = arguments
+            var args = arguments
+            var retval = null
+            var eval_result = null
+            var eval_packet = null
             // retval = eval('this.{{ method_name }}.apply(this, arguments)')
             try {
                 retval = eval('this.{{ method_name }}.apply(this, arguments)')
@@ -96,7 +105,7 @@ setTimeout(function() {
                 else if(recv_option == "intercept_param"){
                     if (recv_time == timestamp){
                         var arg_len = args.length
-                        recv_arg = JSON.parse(recv_data)
+                        var recv_arg = JSON.parse(recv_data)
                         for (var i=0; i < arg_len; i++ ){
                             args[i] = args[i].constructor(recv_arg[i])
                         }

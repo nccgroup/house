@@ -42,13 +42,13 @@ setTimeout(function() {
         }
 
         console.log("In da house..intercept.js")
-        var {{clazz_hook}} = Java.use("{{clazz_name}}");
+        var c_{{clazz_hook}} = Java.use("{{clazz_name}}");
         clazz_Thread = Java.use("java.lang.Thread");
         var clazz_Exception = Java.use("java.lang.Exception");
         clazz = Java.use("java.lang.Class");
         field = Java.use("java.lang.reflect.Field");
         BaseDexClassLoader = Java.use("dalvik.system.BaseDexClassLoader");
-        var overloadz_{{clazz_hook}} = eval("{{clazz_hook}}.{{method_name}}.overloads");
+        var overloadz_{{clazz_hook}} = eval("c_{{clazz_hook}}.{{method_name}}.overloads");
         var ovl_count_{{clazz_hook}} = overloadz_{{clazz_hook}}.length;
         var intercept_signature = "-t1m3f0rm1tm-"
         var timestamp_signature = "-what1sth3t1m3n0w-"
@@ -59,9 +59,9 @@ setTimeout(function() {
         var recv_data = ''
         var recv_option = ''
 
-        var {{clazz_hook}}_{{ method_hook }} = eval('{{clazz_hook}}.{{ method_name }}.overloads[{{overloadIndex}}]')
+        var c_{{clazz_hook}}_{{ method_hook }} = eval('c_{{clazz_hook}}.{{ method_name }}.overloads[{{overloadIndex}}]')
 
-        {{clazz_hook}}_{{ method_hook }}.implementation = function() {
+        c_{{clazz_hook}}_{{ method_hook }}.implementation = function() {
             var sendback = ''
             var args = arguments
             var retval = null

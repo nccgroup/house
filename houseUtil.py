@@ -653,11 +653,6 @@ def run_preload_script():
         if (house_global.preload_conf.get('PRELOAD_SSLSTRIP') == 1):preload_context['PRELOAD_SSLSTRIP'] = 'yes'
         if (house_global.preload_conf.get('PRELOAD_SETPROXY') == 1):preload_context['PRELOAD_SETPROXY'] = 'yes'
 
-
-        # try:  
-    #         pid = house_global.device.get_process(house_global.packagename).pid
-    #         house_global.session = house_global.device.attach(house_global.packagename)
-
         try:
             if (house_global.preload_conf.get('PRELOAD_STETHO') == 1):
                 print (stylize("[!] Have to reload to preload, trying to spawn it..", MightBeImportant))
@@ -667,10 +662,14 @@ def run_preload_script():
                 pending = True
             else:
                 print (stylize("[!] No need to reload..", MightBeImportant))
-
-                pid = house_global.device.get_process(house_global.packagename).pid
-                house_global.session = house_global.device.attach(house_global.packagename)
-                pending = False
+                try:
+                    pid = house_global.device.get_process(house_global.packagename).pid
+                    house_global.session = house_global.device.attach(house_global.packagename)
+                    pending = False
+                except ProcessNotFoundError as e:
+                    pid = house_global.device.spawn([house_global.packagename])
+                    house_global.session = house_global.device.attach(pid)
+                    pending = True
 
             if get_application_name() == None:
                 print (stylize("[!] What is the application name? Try refresh House", Error))

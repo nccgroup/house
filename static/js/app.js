@@ -389,6 +389,12 @@ window.onload = function() {
         })
     }
 
+    function getHookScriptMini() {
+        $.get('http://' + location.host + '/hook_script_mini', (data) => {
+            editor2.setValue(data);
+        })
+    }
+
     function getHookConfig() {
         $.get('http://' + location.host + '/hook_conf', (data) => {
             if (data == "") {
@@ -712,9 +718,16 @@ window.onload = function() {
         });
 
         socket.on('update_hooks', function() {
-            overwrite()
+            getHookConfig()
+            getHookScript()
+            // overwrite()
         });
 
+        socket.on('update_hooks_mini', function() {
+            getHookConfig()
+            getHookScriptMini()
+        });
+        
         socket.on('clear_hook_msg', function() {
             clear_hookMessage()
         });
@@ -872,7 +885,22 @@ window.onload = function() {
             socket.emit("gen_script", hooks_list)
         })
 
+        $("#gen_script_mini").click(() => {
+            var hooks_data = editor.getValue().split('\n')
+            var hooks_list = { hooks_list: [] }
+            for (var index = 0; index < hooks_data.length; index++) {
+                try {
+                    var hook_val = JSON.parse(hooks_data[index])
+                    hooks_list.hooks_list.push(hook_val)
 
+
+                } catch (e) {
+                    console.log("Is this JSON: " + hooks_data[index])
+                }
+            }
+            socket.emit("gen_script_mini", hooks_list)
+        })
+        
         $("#load_script").click(() => {
             var script_to_load = { script: editor2.getValue() }
             socket.emit("loadHookScript", script_to_load)

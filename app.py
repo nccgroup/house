@@ -88,6 +88,19 @@ def getHookScript():
     else:
         return "Please double check you have input the packagename and hooks info"
 
+@app.route('/hook_script_mini', methods=['GET'])
+def getHookScriptMini():
+    try:
+        with open("./cache/current/hook_script_mini.js",'r') as f:
+            house_global.hook_script_mini = f.read()
+    except Exception as e:
+        house_global.hook_script_mini = str(e)
+        
+    if checkok():
+        return house_global.hook_script_mini
+    else:
+        return "Please double check you have input the packagename and hooks info"
+
 @app.route('/enum_script', methods=['GET'])
 def getEnumScript():
     option = house_global.enum_option

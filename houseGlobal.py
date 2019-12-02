@@ -40,6 +40,7 @@ class houseGlobal:
 		self.preload_script_object = None
 		self.enum_script_to_load = ''
 		self.hook_script = ''
+		self.hook_script_mini = ''
 		self.intercept_script = ''
 		self.monitor_script = ''
 		self.preload_script = ''

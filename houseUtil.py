@@ -154,6 +154,9 @@ def cache_script(option, script):
     elif option == "hooks_cache":
         with open('./cache/current/hook_script.js','w') as f:
             f.write(script)
+    elif option == "hooks_cache_mini":
+        with open('./cache/current/hook_script_mini.js','w') as f:
+            f.write(script)
     elif option == "intercept_cache":
         with open('./cache/current/intercept_script.js','w') as f:
             f.write(script)
@@ -464,6 +467,8 @@ def prepare_script_fragment(clazz_name, method_name,script_type,overloadIndex=0,
             result = render('./scripts/intercept/inspect.js',context)
         elif script_type == "intercept":
             result = render('./scripts/intercept/intercept.js',context)
+        elif script_type == "hookmini":
+            result = render('./scripts/hook/hook_mini_frag.js',context)
         else:
             result = render('./scripts/hook/hook_frag.js',context)
         return result
@@ -538,16 +543,41 @@ def build_hook_script():
         # IPython.embed()
         if ".so" not in clazz_name:
             realscript += prepare_script_fragment(clazz_name, method_name, "hook", overload_type = overload_type)
-            realscript += "\n// Added Hook \n"
         else:
             nativescript += prepare_native_script_fragment(clazz_name, method_name)
-            nativescript += "\n// Added Hook \n"
     context = {'scripts': realscript, 'native_scripts': nativescript}
 
     result = render('./scripts/hook/hook_tpl.js',context)
     house_global.hook_script = result
 
     cache_script("hooks_cache", house_global.hook_script)
+
+def build_hook_mini_script():
+    hooks_list = house_global.hook_conf['hooks_list']
+    hooks_number = len(hooks_list)
+
+    realscript = ""
+    nativescript = ""
+
+    # for i in xrange(hooks_number):
+    for entry in hooks_list:
+        # entry = hooks_list[i]
+        clazz_name = entry['classname']
+        method_name = entry['methodname']
+        overload_type = entry.get('overload_type')
+        instruction = entry.get('instruction')
+        # IPython.embed()
+        if ".so" not in clazz_name:
+            realscript += prepare_script_fragment(clazz_name, method_name, "hookmini", overload_type = overload_type)
+        else:
+            nativescript += prepare_native_script_fragment(clazz_name, method_name)
+    context = {'scripts': realscript, 'native_scripts': nativescript}
+
+    result = render('./scripts/hook/hook_tpl_mini.js',context)
+    house_global.hook_script_mini = result
+
+    cache_script("hooks_cache_mini", house_global.hook_script_mini)
+
 
 def build_env_script():
     # print(stylize("[+]Building env script for " + house_global.packagename + " .. ", Info))

@@ -246,6 +246,16 @@ def gen_script(message):
     build_hook_script()
     emit("update_hooks")
 
+@socketio.on('gen_script_mini', namespace='/eventBus')
+@authenticated_only
+def gen_script_mini(message):
+    house_global.hooks_list = message.get('hooks_list')
+    update_conf()
+    house_global.script_to_load = ''
+    house_global.hooks_list = house_global.hook_conf.get('hooks_list')
+    build_hook_mini_script()
+    emit("update_hooks_mini")
+
 @socketio.on('unload_script', namespace='/eventBus')
 @authenticated_only
 def doUnload():

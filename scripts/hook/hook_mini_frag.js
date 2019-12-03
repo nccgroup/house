@@ -23,7 +23,7 @@
                 retval = null
                 console.log("Exception - cannot compute retval.." + String(err))
             }
-            console.log("{{clazz_name}}.{{method_name}} invoked")
+            miniLog("{{clazz_name}}.{{method_name}}", String(arg_type), String(arg_dump))
 	        return retval;
 	    }
 		{% else %}
@@ -45,8 +45,7 @@
 	                retval = null
 	                console.log("Exception - cannot compute retval.." + String(err))
 	            }
-
-	            miniLog("{{clazz_name}}.{{method_name}}", String(arg_dump), i)
+	            miniLog("{{clazz_name}}.{{method_name}}", String(arg_type), String(arg_dump))
 		        return retval;
 		    }
 		}

@@ -1,6 +1,5 @@
-function miniLog(methodname, arg_dump, index){
-	index = (typeof index !== 'undefined') ? index : 0
-    console.log('[+]' + methodname + "[" + String(index) + "] invoked")
+function miniLog(methodname, arg_type, arg_dump){
+    console.log('[+]' + methodname + "(" + arg_type + ")")
     console.log(arg_dump)
 }
 

@@ -8,3 +8,4 @@ cache/
 config/
 *.bak
 *.bak.js
+*.dev

@@ -124,7 +124,6 @@ def hook():
     class_name = str(request.form.get('classname'))
     method_name = str(request.form.get('methodname')) 
     if (method_name != 'None') & (class_name != 'None'):
-    # TODO: use jinja to render script dynamically
         hook_dict = {"classname": class_name, "methodname": method_name}
         house_global.hooks_list.append(hook_dict)
         update_conf()

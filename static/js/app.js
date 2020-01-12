@@ -4,9 +4,25 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + house
 var device = null
 var tmp = null
 var save_script_data = null
-var monitor_messages = { "IPC": [], "HTTP": [], "MISC": [], "FILEIO": [], "SHAREDPREFERENCES": [], "WEBVIEW": [], "SQL": [] }
-var monitor_settings = { 'SWITCH_FILEIO': 1, 'SWITCH_SHAREDPREFERENCES': 1, 'SWITCH_HTTP': 1, 'SWITCH_SQL': 1, 'SWITCH_WEBVIEW': 1, 'SWITCH_IPC': 1, 'SWITCH_MISC': 1 }
-var preload_settings = { "PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0, "PRELOAD_SETPROXY" : 0 }
+var monitor_messages = {
+    "IPC": [],
+    "HTTP": [],
+    "MISC": [],
+    "FILEIO": [],
+    "SHAREDPREFERENCES": [],
+    "WEBVIEW": [],
+    "SQL": []
+}
+var monitor_settings = {
+    'SWITCH_FILEIO': 1,
+    'SWITCH_SHAREDPREFERENCES': 1,
+    'SWITCH_HTTP': 1,
+    'SWITCH_SQL': 1,
+    'SWITCH_WEBVIEW': 1,
+    'SWITCH_IPC': 1,
+    'SWITCH_MISC': 1
+}
+var preload_settings = {"PRELOAD_STETHO": 0, "PRELOAD_SSLSTRIP": 0, "PRELOAD_SETPROXY": 0}
 var monitor_refresh = false;
 
 function refresh_device() {
@@ -17,7 +33,7 @@ function select_device() {
     device_id = $("input[name='device_id']:checked").val();
     console.log("select_device_button clicked..")
     if (device_id != null) {
-        socket.emit("set_device_id", { id: device_id })
+        socket.emit("set_device_id", {id: device_id})
     }
 }
 
@@ -33,8 +49,8 @@ function runpreload() {
     preload_settings['PRELOAD_STETHO'] = document.getElementById("PRELOAD_STETHO").checked ? 1 : 0
     preload_settings['PRELOAD_SSLSTRIP'] = document.getElementById("PRELOAD_SSLSTRIP").checked ? 1 : 0
     preload_settings['PRELOAD_SETPROXY'] = document.getElementById("PRELOAD_SETPROXY").checked ? 1 : 0
-    
-    socket.emit("runpreload", { preload_settings: preload_settings })
+
+    socket.emit("runpreload", {preload_settings: preload_settings})
 }
 
 function loadMonitor() {
@@ -46,7 +62,7 @@ function loadMonitor() {
     monitor_settings['SWITCH_IPC'] = document.getElementById("SWITCH_IPC").checked ? 1 : 0
     monitor_settings['SWITCH_MISC'] = document.getElementById("SWITCH_MISC").checked ? 1 : 0
     // console.log(monitor_settings)
-    socket.emit("loadMonitor", { monitor_settings: monitor_settings })
+    socket.emit("loadMonitor", {monitor_settings: monitor_settings})
 }
 
 function setMonitorRefresh() {
@@ -73,7 +89,7 @@ function uncheckpreload() {
     document.getElementById("PRELOAD_STETHO").checked = false
     document.getElementById("PRELOAD_SSLSTRIP").checked = false
     document.getElementById("PRELOAD_SETPROXY").checked = false
-    
+
 }
 
 
@@ -97,12 +113,17 @@ function get_uuid() {
 }
 
 function enumAllClasses() {
-    enum_config = { option: 'enumAllClasses' }
+    enum_config = {option: 'enumAllClasses'}
     socket.emit("setEnumConfig", enum_config)
 }
 
 function enumDexClasses() {
-    enum_config = { option: 'enumDexClasses' }
+    enum_config = {option: 'enumDexClasses'}
+    socket.emit("setEnumConfig", enum_config)
+}
+
+function enumClassLoaders() {
+    enum_config = {option: 'enumClassLoaders'}
     socket.emit("setEnumConfig", enum_config)
 }
 
@@ -119,7 +140,7 @@ function get_intercept_history() {
 }
 
 function changePackage(packagename) {
-    var pkg = { packagename: packagename }
+    var pkg = {packagename: packagename}
     $("#env_result").html("Waiting for device & package...")
     socket.emit("setPackage", pkg)
 }
@@ -127,7 +148,7 @@ function changePackage(packagename) {
 
 function showHistoryScript(path, option) {
     if (path) {
-        var data = { filepath: path, option: option }
+        var data = {filepath: path, option: option}
         socket.emit("get_history_script", data)
     } else {
         editor_hook_history.setValue("Invalid File!")
@@ -147,19 +168,18 @@ function load_intercept_history_script() {
 }
 
 
-
 function save_script(option, filename, script) {
-    save_script_data = { option: option, filename: filename, script: script }
+    save_script_data = {option: option, filename: filename, script: script}
     socket.emit("save_script", save_script_data)
 }
 
 function deleteScript(path) {
-    socket.emit("deleteScript", { path: path })
+    socket.emit("deleteScript", {path: path})
 }
 
 function genIntercept() {
     var index = $("#indexSelect").val() ? $("#indexSelect").val() : 0
-    var intercept_index = { intercept_index: Number(index) }
+    var intercept_index = {intercept_index: Number(index)}
     socket.emit("genIntercept", intercept_index)
 }
 
@@ -185,7 +205,9 @@ function push_err_msg(data) {
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button></div>`);
-    setTimeout(function() { $("#err_msg").empty() }, 20000)
+    setTimeout(function () {
+        $("#err_msg").empty()
+    }, 20000)
     unload_script()
 }
 
@@ -213,7 +235,7 @@ function clear_hookMessage() {
 function clear_monitorMessage(type) {
     $("#" + type + 'monitorBody').empty();
     clear_notification(type.toUpperCase())
-    socket.emit("clear_monitorMessage", { "monitor_type": type })
+    socket.emit("clear_monitorMessage", {"monitor_type": type})
 
 }
 
@@ -273,7 +295,7 @@ function getTime() {
     return x
 }
 
-window.onload = function() {
+window.onload = function () {
     function getMessages() {
         $.get('http://' + location.host + '/messages', (data) => {
             data = JSON.parse(data);
@@ -308,13 +330,13 @@ window.onload = function() {
                 console.log("Exception : " + data.exception)
             } else {
                 // $("#filemonitorOutput").empty();
-                FILEIO_message.forEach(addMonitorMessages, { type: "FILEIO" });
-                SHAREDPREFERENCES_message.forEach(addMonitorMessages, { type: "SHAREDPREFERENCES" });
-                HTTP_message.forEach(addMonitorMessages, { type: "HTTP" });
-                MISC_message.forEach(addMonitorMessages, { type: "MISC" });
-                IPC_message.forEach(addMonitorMessages, { type: "IPC" });
-                WEBVIEW_message.forEach(addMonitorMessages, { type: "WEBVIEW" });
-                SQL_message.forEach(addMonitorMessages, { type: "SQL" });
+                FILEIO_message.forEach(addMonitorMessages, {type: "FILEIO"});
+                SHAREDPREFERENCES_message.forEach(addMonitorMessages, {type: "SHAREDPREFERENCES"});
+                HTTP_message.forEach(addMonitorMessages, {type: "HTTP"});
+                MISC_message.forEach(addMonitorMessages, {type: "MISC"});
+                IPC_message.forEach(addMonitorMessages, {type: "IPC"});
+                WEBVIEW_message.forEach(addMonitorMessages, {type: "WEBVIEW"});
+                SQL_message.forEach(addMonitorMessages, {type: "SQL"});
             }
         })
     }
@@ -338,13 +360,13 @@ window.onload = function() {
             console.log("Exception : " + data.exception)
         } else {
             clear_monitorUI()
-            FILEIO_message.forEach(addMonitorMessages, { type: "FILEIO" });
-            SHAREDPREFERENCES_message.forEach(addMonitorMessages, { type: "SHAREDPREFERENCES" });
-            HTTP_message.forEach(addMonitorMessages, { type: "HTTP" });
-            MISC_message.forEach(addMonitorMessages, { type: "MISC" });
-            IPC_message.forEach(addMonitorMessages, { type: "IPC" });
-            WEBVIEW_message.forEach(addMonitorMessages, { type: "WEBVIEW" });
-            SQL_message.forEach(addMonitorMessages, { type: "SQL" });
+            FILEIO_message.forEach(addMonitorMessages, {type: "FILEIO"});
+            SHAREDPREFERENCES_message.forEach(addMonitorMessages, {type: "SHAREDPREFERENCES"});
+            HTTP_message.forEach(addMonitorMessages, {type: "HTTP"});
+            MISC_message.forEach(addMonitorMessages, {type: "MISC"});
+            IPC_message.forEach(addMonitorMessages, {type: "IPC"});
+            WEBVIEW_message.forEach(addMonitorMessages, {type: "WEBVIEW"});
+            SQL_message.forEach(addMonitorMessages, {type: "SQL"});
         }
     }
 
@@ -564,7 +586,7 @@ window.onload = function() {
 
 
     $(() => {
-        socket.emit('authentication', { uuid: get_uuid() });
+        socket.emit('authentication', {uuid: get_uuid()});
         var current_intercept_time = null
         refresh_device()
         getPackages()
@@ -584,11 +606,11 @@ window.onload = function() {
         socket.emit('fetchInspect');
         // socket.emit('check_monitor_running');
 
-        socket.on('log', function(msg) {
+        socket.on('log', function (msg) {
             console.log(("[+]Log: " + msg.data))
         });
 
-        socket.on('monitor_running_status', function(msg) {
+        socket.on('monitor_running_status', function (msg) {
             if (msg.running == 1) {
                 $("#monitor_running").text("Running");
             } else {
@@ -596,30 +618,29 @@ window.onload = function() {
             }
         });
 
-        socket.on('select_device', function(msg) {
+        socket.on('select_device', function (msg) {
             dl = msg.device_list;
             select_device_html = '<div class="bg-warning"><form>'
             if (dl != null && dl != "None") {
                 json_dl = JSON.parse(dl)
-                jQuery.each(json_dl, function(id, val) {
+                jQuery.each(json_dl, function (id, val) {
                     select_device_html += `<div class="radio">
       <label><input type="radio" name="device_id" value="` + id + `">` + `<p class="text-info"><i class="glyphicon glyphicon-phone"></i>` + val + " </p></label></div>"
                 });
                 select_device_html += `<button class="btn btn-success" type="button" id="select_device_button" onclick="select_device()"'>Select</button>
                     </div>`
                 $("#device_info_tab").html(select_device_html)
-                console.log(select_device_html)
             }
 
         });
 
-        socket.on('show_selected_device', function(msg) {
+        socket.on('show_selected_device', function (msg) {
             dl = msg.device_list;
             id = msg.selection
             select_device_html = '<div class="bg-success"><form>'
             if (dl != null && dl != "None") {
                 json_dl = JSON.parse(dl)
-                jQuery.each(json_dl, function(id, val) {
+                jQuery.each(json_dl, function (id, val) {
                     select_device_html += `<div class="radio">
       <label><input type="radio" name="device_id" value="` + id + `">` + `<p class="text-info"><i class="glyphicon glyphicon-phone"></i>` + val + " </p></label></div>"
                 });
@@ -633,7 +654,7 @@ window.onload = function() {
 
         });
 
-        socket.on('update_device', function(msg) {
+        socket.on('update_device', function (msg) {
             device = msg.data;
             if (device != null && device != "None") {
                 device_html = `<div class="bg-success">
@@ -649,30 +670,30 @@ window.onload = function() {
 
         })
 
-        socket.on('update_package', function(msg) {
+        socket.on('update_package', function (msg) {
             getPackages()
             doEnv()
 
         })
 
-        socket.on('update_env_info', function(msg) {
+        socket.on('update_env_info', function (msg) {
             if (msg.error) {
                 $("#env_result").html("<code>" + msg.error + "</code><br />")
             } else {
                 j_data = JSON.parse(msg.data)
                 var result = ""
-                jQuery.each(j_data, function(i, val) {
+                jQuery.each(j_data, function (i, val) {
                     result += i + " : " + "<code>" + val + "</code><br />"
                 });
                 $("#env_result").html(result)
             }
         });
 
-        socket.on('update_enum_messages', function() {
+        socket.on('update_enum_messages', function () {
             getEnumMessages();
         });
 
-        socket.on('new_hook_message', function(msg) {
+        socket.on('new_hook_message', function (msg) {
             getMessages()
         });
 
@@ -683,13 +704,17 @@ window.onload = function() {
         //     // getMonitorMessages()
         // });
 
-        socket.on('update_monitor_message', function(msg) {
+        socket.on('update_monitor_message', function (msg) {
             // $('#NOTI_' + msg.mon_type).text("New");
             // console.log(msg.monitor_new.length)
             if (msg.monitor_new.length != 0) {
                 // lazy refreshing
                 for (i in msg.monitor_new) {
-                    if (msg.monitor_new[i] == null) { break; } else { $('#NOTI_' + msg.monitor_new[i]).text("New"); }
+                    if (msg.monitor_new[i] == null) {
+                        break;
+                    } else {
+                        $('#NOTI_' + msg.monitor_new[i]).text("New");
+                    }
                 }
                 monitor_messages = msg.monitor_message;
                 renderMonitorMessages(monitor_messages)
@@ -699,13 +724,12 @@ window.onload = function() {
         });
 
 
-
-        socket.on('new_intercept', function(msg) {
+        socket.on('new_intercept', function (msg) {
             editor5.setValue(msg.data)
             current_intercept_time = msg.time
         });
 
-        socket.on('new_repl', function(msg) {
+        socket.on('new_repl', function (msg) {
             try {
                 j_eval_packet = JSON.parse(msg.data)
                 eval_display = "[" + j_eval_packet.eval_time + "]" + '\n-> ' + j_eval_packet.eval_input + '\n' + j_eval_packet.eval_output + '\n'
@@ -717,22 +741,22 @@ window.onload = function() {
             }
         });
 
-        socket.on('update_hooks', function() {
+        socket.on('update_hooks', function () {
             getHookConfig()
             getHookScript()
             // overwrite()
         });
 
-        socket.on('update_hooks_mini', function() {
+        socket.on('update_hooks_mini', function () {
             getHookConfig()
             getHookScriptMini()
         });
-        
-        socket.on('clear_hook_msg', function() {
+
+        socket.on('clear_hook_msg', function () {
             clear_hookMessage()
         });
 
-        socket.on('refresh_history_script', function(msg) {
+        socket.on('refresh_history_script', function (msg) {
             switch (msg.option) {
                 case "enum":
                     get_enum_history()
@@ -749,19 +773,19 @@ window.onload = function() {
             }
         });
 
-        socket.on('update_enum_history', function(msg) {
+        socket.on('update_enum_history', function (msg) {
             $("#dir_enum_lst").html(msg.data)
         });
 
-        socket.on('update_hooks_history', function(msg) {
+        socket.on('update_hooks_history', function (msg) {
             $("#dir_hooks_lst").html(msg.data)
         });
 
-        socket.on('update_intercept_history', function(msg) {
+        socket.on('update_intercept_history', function (msg) {
             $("#dir_int_lst").html(msg.data)
         });
 
-        socket.on('update_script_content', function(msg) {
+        socket.on('update_script_content', function (msg) {
             switch (msg.option) {
                 case "enum":
                     editor_enum_history.setValue(msg.script);
@@ -779,7 +803,7 @@ window.onload = function() {
             // editor_hook_history.setValue(msg.script)
         });
 
-        socket.on('update_inspect_result', function(msg) {
+        socket.on('update_inspect_result', function (msg) {
             $("#inspect_classname").val(msg.classname)
             $("#inspect_method").val(msg.methodname)
             $("#inspect_result").html(msg.inspect_result)
@@ -789,16 +813,16 @@ window.onload = function() {
             }
         });
 
-        socket.on('update_intercept_script', function(msg) {
+        socket.on('update_intercept_script', function (msg) {
             intercepts_script_editor.setValue(msg.script)
         });
 
-        socket.on('new_error_message', function(msg) {
+        socket.on('new_error_message', function (msg) {
             push_err_msg(msg.data);
 
         });
 
-        socket.on('EnumConfigDone', function() {
+        socket.on('EnumConfigDone', function () {
             $.get('http://' + location.host + '/enum_script', (data) => {
                 editor3.setValue(data);
             })
@@ -814,7 +838,7 @@ window.onload = function() {
         })
 
         $("#find_class").click(() => {
-            var enum_config = { class_to_find: $("#class_to_find").val(), option: 'enumClassMethods' }
+            var enum_config = {class_to_find: $("#class_to_find").val(), option: 'enumClassMethods'}
             socket.emit("setEnumConfig", enum_config)
         })
 
@@ -834,9 +858,8 @@ window.onload = function() {
         })
 
 
-
         $("#postPackage").click(() => {
-            var pkg = { packagename: $("#packagename").val() }
+            var pkg = {packagename: $("#packagename").val()}
             postPackage(pkg)
             location.reload();
         })
@@ -850,12 +873,29 @@ window.onload = function() {
         })
 
         $("#add_hook").click(() => {
-            var hook_message = { classname: $("#classname").val(), methodname: $("#method").val(), overload_type: $("#overload_type").val() }
+            var dyload_path = $("#dyload_path").val()
+            var hook_message = {}
+            if (dyload_path == "") {
+                hook_message = {
+                    classname: $("#classname").val(),
+                    methodname: $("#method").val(),
+                    overload_type: $("#overload_type").val()
+                }
+            } else {
+                hook_message = {
+                    dyload_path : dyload_path,
+                    classname: $("#classname").val(),
+                    methodname: $("#method").val(),
+                    overload_type: $("#overload_type").val(),
+                    dynamicHookOption: "new"
+                }
+            }
+
             $("#classname").val('')
             $("#method").val('')
             $("#overload_type").val('')
+            $("#dyload_path").val('')
             appendLn(editor, JSON.stringify(hook_message))
-
         })
 
         $("#hook_clear").click(() => {
@@ -871,12 +911,11 @@ window.onload = function() {
 
         $("#gen_script").click(() => {
             var hooks_data = editor.getValue().split('\n')
-            var hooks_list = { hooks_list: [] }
+            var hooks_list = {hooks_list: []}
             for (var index = 0; index < hooks_data.length; index++) {
                 try {
                     var hook_val = JSON.parse(hooks_data[index])
                     hooks_list.hooks_list.push(hook_val)
-
 
                 } catch (e) {
                     console.log("Is this JSON: " + hooks_data[index])
@@ -887,28 +926,26 @@ window.onload = function() {
 
         $("#gen_script_mini").click(() => {
             var hooks_data = editor.getValue().split('\n')
-            var hooks_list = { hooks_list: [] }
+            var hooks_list = {hooks_list: []}
             for (var index = 0; index < hooks_data.length; index++) {
                 try {
                     var hook_val = JSON.parse(hooks_data[index])
                     hooks_list.hooks_list.push(hook_val)
-
-
                 } catch (e) {
                     console.log("Is this JSON: " + hooks_data[index])
                 }
             }
             socket.emit("gen_script_mini", hooks_list)
         })
-        
+
         $("#load_script").click(() => {
-            var script_to_load = { script: editor2.getValue() }
+            var script_to_load = {script: editor2.getValue()}
             socket.emit("loadHookScript", script_to_load)
             // overwrite()
         })
 
         $("#load_script_enum").click(() => {
-            var script_to_load = { script: editor3.getValue() }
+            var script_to_load = {script: editor3.getValue()}
             socket.emit("loadEnumScript", script_to_load)
             editor4.setValue("Waiting for response..")
         })
@@ -917,7 +954,7 @@ window.onload = function() {
             var classname = $("#inspect_classname").val()
             var methodname = $("#inspect_method").val()
             if ((classname) && (methodname)) {
-                var inspect_input = { ins_classname: classname, ins_methodname: methodname }
+                var inspect_input = {ins_classname: classname, ins_methodname: methodname}
                 socket.emit("doInspect", inspect_input)
 
                 $("#inspect_result").html("<p class='text-primary'>Loading...</p>")
@@ -928,25 +965,28 @@ window.onload = function() {
         })
 
         $("#load_intercept_script").click(() => {
-            data = { script: intercepts_script_editor.getValue() };
+            data = {script: intercepts_script_editor.getValue()};
             socket.emit("load_intercept_script", data)
         });
 
         $("#intercept_send").click(() => {
             var param = editor5.getValue();
             var j_param = JSON.parse(param)
-            j_sendback = { data: param, time: current_intercept_time }
-            socket.emit('intercept_param', { data: JSON.stringify(param), time: JSON.stringify(current_intercept_time), option: "intercept_param" });
+            j_sendback = {data: param, time: current_intercept_time}
+            socket.emit('intercept_param', {
+                data: JSON.stringify(param),
+                time: JSON.stringify(current_intercept_time),
+                option: "intercept_param"
+            });
             editor5.setValue("Sent..")
             editor6.setValue("")
         })
 
 
-
         $("#repl_send").click(() => {
             var cmd = editor6.getValue();
-            j_sendback = { data: cmd }
-            socket.emit('intercept_param', { data: cmd, time: getTime(), option: "intercept_repl" });
+            j_sendback = {data: cmd}
+            socket.emit('intercept_param', {data: cmd, time: getTime(), option: "intercept_repl"});
         })
 
         $("#repl_clear").click(() => {
@@ -954,25 +994,24 @@ window.onload = function() {
         })
 
 
-
         // Some toggle settings
         $("#wrapper").toggleClass("toggled");
-        $("#menu-toggle").click(function(e) {
+        $("#menu-toggle").click(function (e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
         });
-        $("#info-toggle").click(function(e) {
+        $("#info-toggle").click(function (e) {
             e.preventDefault();
             $("#hook-info-div").toggle();
         })
-        $("#check_device").click(function(e) {
+        $("#check_device").click(function (e) {
             e.preventDefault();
             $("#device_info").toggle();
         })
 
-        $("#toggle_intercept_repl").click(function(e) {
+        $("#toggle_intercept_repl").click(function (e) {
             var link = $(this);
-            $("#intercept-repl-div").slideToggle('slow', function() {
+            $("#intercept-repl-div").slideToggle('slow', function () {
                 if ($(this).is(':visible')) {
                     link.text('Hide Intercept Repl');
                 } else {
@@ -981,14 +1020,14 @@ window.onload = function() {
             });
         })
 
-        $("#select_pkg").click(function(e) {
+        $("#select_pkg").click(function (e) {
             e.preventDefault();
             $("#pkg_info").toggle();
         })
 
-        $("#toggle_hook_info").click(function(e) {
+        $("#toggle_hook_info").click(function (e) {
             var link = $(this);
-            $("#hook-info-div").slideToggle('slow', function() {
+            $("#hook-info-div").slideToggle('slow', function () {
                 if ($(this).is(':visible')) {
                     link.html('Hooks <i class="glyphicon glyphicon-resize-small"></i>');
                 } else {
@@ -997,9 +1036,9 @@ window.onload = function() {
             });
         })
 
-        $("#toggle_inspect_info").click(function(e) {
+        $("#toggle_inspect_info").click(function (e) {
             var link = $(this);
-            $("#inspect-div").slideToggle('slow', function() {
+            $("#inspect-div").slideToggle('slow', function () {
                 if ($(this).is(':visible')) {
                     link.html('Inspect <i class="glyphicon glyphicon-resize-small"></i>');
                 } else {
@@ -1008,9 +1047,9 @@ window.onload = function() {
             });
         })
 
-        $("#toggle_repl").click(function(e) {
+        $("#toggle_repl").click(function (e) {
             var link = $(this);
-            $("#intercept-repl-div").slideToggle('slow', function() {
+            $("#intercept-repl-div").slideToggle('slow', function () {
                 if ($(this).is(':visible')) {
                     link.html('REPL <i class="glyphicon glyphicon-menu-up"></i>');
                 } else {

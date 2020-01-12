@@ -36,8 +36,11 @@ By default, House binds to http://127.0.0.1:8000.
 To get an overview of House capabilities, you can visit [user's manual](https://github.com/nccgroup/house/wiki/Overview) for details.
 
 ## News
-- House now runs on **python3**, as python2 will retire in 2019.
-- Added Monitor tab, inspired by [Inspeckage](https://github.com/ac-pm/Inspeckage).
+- Added dynamic dex/jar hooking, House now can hook functions in dynamically loaded dex/jar files
+![hook.gif](./gifs/dyload.gif)
+- Added Mini Script option for Hooks
+![hook.gif](./gifs/dyload_mini.gif)
+- ClassLoader Enum
 
 
 ## Example Usage
@@ -88,6 +91,12 @@ following command: `frida-ps -U`.
 #### Multiple Function Tracing
 - *Scripts rendering and Function Tracing*
 	![hook.gif](./gifs/hook.gif)
+	
+- *Hooks for functions in dynamically loaded dex/jar files*
+	![hook.gif](./gifs/dyload.gif)
+	
+- *Mini Script option*
+	![hook.gif](./gifs/dyload_mini.gif)
 	
 - *History Scripts management*
 	![hook_history_script.gif](./gifs/hook_history_script.gif)

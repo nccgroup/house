@@ -1,4 +1,5 @@
 __pycache__/
+*.idea
 Pipfile.lock
 *.pyc
 .DS_Store
@@ -7,3 +8,4 @@ cache/
 config/
 *.bak
 *.bak.js
+*.dev

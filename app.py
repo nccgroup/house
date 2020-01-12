@@ -88,6 +88,19 @@ def getHookScript():
     else:
         return "Please double check you have input the packagename and hooks info"
 
+@app.route('/hook_script_mini', methods=['GET'])
+def getHookScriptMini():
+    try:
+        with open("./cache/current/hook_script_mini.js",'r') as f:
+            house_global.hook_script_mini = f.read()
+    except Exception as e:
+        house_global.hook_script_mini = str(e)
+        
+    if checkok():
+        return house_global.hook_script_mini
+    else:
+        return "Please double check you have input the packagename and hooks info"
+
 @app.route('/enum_script', methods=['GET'])
 def getEnumScript():
     option = house_global.enum_option
@@ -111,7 +124,6 @@ def hook():
     class_name = str(request.form.get('classname'))
     method_name = str(request.form.get('methodname')) 
     if (method_name != 'None') & (class_name != 'None'):
-    # TODO: use jinja to render script dynamically
         hook_dict = {"classname": class_name, "methodname": method_name}
         house_global.hooks_list.append(hook_dict)
         update_conf()

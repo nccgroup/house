@@ -5,13 +5,23 @@ function enumAllClasses() {
 
     classes.forEach(function(aClass) {
         try {
-            // var className = aClass.match(/[L](.*);/)[1].replace(/\//g, ".");
             var className = aClass.replace(/\//g, ".");
         } catch (err) {}
         allClasses.push(className);
     });
 
     return allClasses;
+}
+
+function enumClassLoaders(){
+    var allClassLoaders = []
+    var classLoaders = Java.enumerateClassLoadersSync()
+
+    classLoaders.forEach(function(cl) {
+        allClassLoaders.push(cl);
+    });
+
+    return allClassLoaders;
 }
 
 function enumDexClasses(apk_path) {
@@ -57,16 +67,7 @@ function enumLibSo(lib_name){
     for(i=0; i<exports.length; i++){
         foundObj.push(String(exports[i].name) + " : " + String(exports[i].address))
     }
-
     return foundObj
-    // for(i=0; i<exports.length; i++){
-
-    //     if(exports[i].name == "Java_com_yaotong_crackme_MainActivity_securityCheck"){
-    //         securityCheck = exports[i].address;
-    //         send("securityCheck is at " + securityCheck);
-    //         break;
-    //     }
-    // }
 }
 
 setTimeout(function() {
@@ -81,6 +82,14 @@ setTimeout(function() {
 	    var a = enumAllClasses();
 	    a.forEach(function(s) {
             if (s){classname_return += JSON.stringify(s) + '\n'}
+	    });
+        sendback = enum_signature + classname_return
+
+        {% elif option == "enumClassLoaders" %}
+        // enumerate all classes
+	    var a = enumClassLoaders();
+	    a.forEach(function(s) {
+            if (s){classname_return += String(s) + '\n'}
 	    });
         sendback = enum_signature + classname_return
 

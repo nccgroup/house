@@ -19,10 +19,12 @@ intended to make Frida script writing as simple as possible.*
 ## TL;DR
 ~~~
 git clone https://github.com/nccgroup/house
-pip install pipenv
-pipenv install
-pipenv shell
-python app.py <PORT>
+cd house
+pip3 install -r requirements.txt
+pip3 install pipenv
+pipenv --python=/usr/bin/python3 install
+pipenv --python=/usr/bin/python3 shell
+python3 app.py <PORT>
 
 # or:
 mkvirtualenv --python=/usr/local/bin/python3 house

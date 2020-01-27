@@ -31,9 +31,13 @@ import json
 # import IPython
 import jinja2
 import os
-import cgi
 from flask import render_template, request
 import argparse
+
+if sys.version_info >= (3, 8):
+    import html as cgi
+else:
+    import cgi
 
 Error = colored.fg("red") + colored.attr("bold")
 Info = colored.fg("green") + colored.attr("bold")

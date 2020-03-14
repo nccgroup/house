@@ -31,6 +31,15 @@ mkvirtualenv --python=/usr/local/bin/python3 house
 workon house
 pip install -r requirements.txt
 python app.py <PORT>
+
+# or: (only for Mac OS)
+git clone https://github.com/nccgroup/house
+cd house
+pip3 install -r requirements.txt
+pip3 install pipenv
+pipenv --python=/usr/local/bin/python3 install
+pipenv --python=/usr/local/bin/python3 shell
+python3 app.py <PORT>
 ~~~
 By default, House binds to http://127.0.0.1:8000.
 

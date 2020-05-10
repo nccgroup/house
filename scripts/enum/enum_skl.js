@@ -25,10 +25,10 @@ function enumClassLoaders(){
 }
 
 function enumDexClasses(apk_path) {
-    BaseDexClassLoader = Java.use("dalvik.system.BaseDexClassLoader");
-    DexFile = Java.use("dalvik.system.DexFile");
-    df = DexFile.$new(apk_path);
-    en = df.entries()
+    var BaseDexClassLoader = Java.use("dalvik.system.BaseDexClassLoader");
+    var DexFile = Java.use("dalvik.system.DexFile");
+    var df = DexFile.$new(apk_path);
+    var en = df.entries()
 
     var dexClasses = []
     while(en.hasMoreElements()){

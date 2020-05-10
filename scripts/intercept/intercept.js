@@ -8,11 +8,14 @@ var field = null
 var BaseDexClassLoader = null
 var Toast = null
 var Log = null
+var retval_overriden = false
 
 function setRetval(ret){
+    console.log("[+ Frida ] Before setRetval: " + String(retval))
     if (retval != null){
         retval = ret_constructor(ret);
-        console.log("retval overriden..");
+        console.log("[+ Frida ] retval overriden..");
+        retval_overriden = true
     }
     
 }
@@ -64,7 +67,7 @@ setTimeout(function() {
         c_{{clazz_hook}}_{{ method_hook }}.implementation = function() {
             var sendback = ''
             var args = arguments
-            var retval = null
+            retval = null
             var eval_result = null
             var eval_packet = null
             // retval = eval('this.{{ method_name }}.apply(this, arguments)')
@@ -94,8 +97,9 @@ setTimeout(function() {
                 if(recv_option == "terminate"){
                     try {
                         console.log("[+ Frida ] Debug  Re-calculate retval!")
-                        retval = eval('this.{{ method_name }}.apply(this, arguments)')
-                        // retval = eval('this.$init.apply(this, arguments)')
+                        if(!retval_overriden){
+                            retval = eval('this.{{ method_name }}.apply(this, arguments)')
+                        }
                     } catch (err) {
                         // retval = null
                         console.log("Exception - cannot compute retval.." + JSON.stringify(err))

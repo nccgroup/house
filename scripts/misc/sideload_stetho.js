@@ -10,7 +10,6 @@ function loadStetho() {
         const InputStreamReader = Java.use("java.io.InputStreamReader");
         const InputStream = Java.use("java.io.InputStream");
         const BufferedReader = Java.use("java.io.BufferedReader");
-        const Class = Java.use("java.lang.Class");
         const class_Object = Java.use("java.lang.Object");
         const ZipFile = Java.use("java.util.zip.ZipFile")
 
@@ -30,7 +29,7 @@ function loadStetho() {
         var Stetho_methods = StethoCast.getDeclaredMethods();
 
         var func_initializeWithDefaults = null;
-        for (i = 0; i < Stetho_methods.length; i++) {
+        for (var i = 0; i < Stetho_methods.length; i++) {
             if (Stetho_methods[i].getName() == "initializeWithDefaults") {
                 func_initializeWithDefaults = Stetho_methods[i];
                 // Found: public static void com.facebook.stetho.Stetho.initializeWithDefaults(android.content.Context)
